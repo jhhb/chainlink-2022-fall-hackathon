@@ -1,7 +1,7 @@
 import { Button } from "@web3uikit/core";
-import { SendTransaction } from "@web3uikit/web3";
 import React from "react";
 import { roll } from "../utils";
+import { MagicEightBall } from "./MagicEightBall";
 
 export type Statuses = "NONE" | "RUNNING" | "RAN";
 
@@ -67,6 +67,7 @@ export class AuthenticatedActions extends React.Component<
         <h2>Polled Status: {status}</h2>
         <h2>Intended Next status: {intendedNextStatus}</h2>
         <h2>You are authenticated!</h2>
+        <MagicEightBall />
         <div>
           <Button
             theme="primary"
