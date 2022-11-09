@@ -1,6 +1,6 @@
 import { Button } from "@web3uikit/core";
 import React from "react";
-import { roll } from "../utils";
+import { askQuestion } from "../utils";
 import { MagicEightBall } from "./MagicEightBall";
 
 export type Statuses = "NONE" | "RUNNING" | "RAN";
@@ -31,7 +31,7 @@ export class AuthenticatedActions extends React.Component<
       intendedNextStatus: nextStatus(status),
     });
     try {
-      const r = await roll();
+      const r = await askQuestion();
       console.log(r);
     } catch (error) {
       console.error(error);

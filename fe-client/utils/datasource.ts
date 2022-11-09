@@ -19,7 +19,9 @@ export async function fetchStatus(address: string): Promise<Statuses> {
 }
 
 // TODO: JB
-export async function roll(): Promise<ReturnType<Moralis["executeFunction"]>> {
+export async function askQuestion(): Promise<
+  ReturnType<Moralis["executeFunction"]>
+> {
   return Moralis.executeFunction({
     abi: CONTRACT_ABI,
     contractAddress: LOCALHOST_CONTRACT_ADDRESS,
