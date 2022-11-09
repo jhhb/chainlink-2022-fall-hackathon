@@ -3,7 +3,7 @@ const CONTRACT_ABI = [
     "inputs": [
       {
         "internalType": "uint64",
-        "name": "subscriptionId",
+        "name": "_subscriptionId",
         "type": "uint64"
       },
       {
@@ -13,7 +13,7 @@ const CONTRACT_ABI = [
       },
       {
         "internalType": "bytes32",
-        "name": "keyHash",
+        "name": "_keyHash",
         "type": "bytes32"
       }
     ],
@@ -48,11 +48,11 @@ const CONTRACT_ABI = [
       {
         "indexed": true,
         "internalType": "uint256",
-        "name": "result",
+        "name": "asker",
         "type": "uint256"
       }
     ],
-    "name": "DiceLanded",
+    "name": "QuestionAnswered",
     "type": "event"
   },
   {
@@ -67,22 +67,22 @@ const CONTRACT_ABI = [
       {
         "indexed": true,
         "internalType": "address",
-        "name": "roller",
+        "name": "asker",
         "type": "address"
       }
     ],
-    "name": "DiceRolled",
+    "name": "QuestionAsked",
     "type": "event"
   },
   {
     "inputs": [
       {
         "internalType": "address",
-        "name": "addr",
+        "name": "userAddress",
         "type": "address"
       }
     ],
-    "name": "getUserStatus",
+    "name": "answer",
     "outputs": [
       {
         "internalType": "string",
@@ -94,14 +94,27 @@ const CONTRACT_ABI = [
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "askQuestion",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "requestId",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
-        "name": "user_address",
+        "name": "addr",
         "type": "address"
       }
     ],
-    "name": "house",
+    "name": "getUserStatus",
     "outputs": [
       {
         "internalType": "string",
@@ -129,24 +142,11 @@ const CONTRACT_ABI = [
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "rollDice",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "requestId",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
   }
 ];
 
-const LOCALHOST_CONTRACT_ADDRESS = "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82";
-const START_FUNCTION_NAME = 'rollDice';
+const LOCALHOST_CONTRACT_ADDRESS = "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c";
+const START_FUNCTION_NAME = 'askQuestion';
 const GET_STATUS_FUNCTION_NAME = 'getUserStatus';
 
 export { CONTRACT_ABI, LOCALHOST_CONTRACT_ADDRESS, START_FUNCTION_NAME, GET_STATUS_FUNCTION_NAME };
