@@ -32,12 +32,14 @@ export class AuthenticatedActionsProvider extends React.Component<Props, {status
         console.log('values are the same');
       }
     };
-    this.poller = Poller.buildAndStart(this.props.account, 2000, callback);
+    this.poller = Poller.buildAndStart(this.props.account, this.POLL_INTERVAL, callback);
   }
 
   public render() {
     if (this.state.status) {
       return <AuthenticatedActions account={this.props.account} status={this.state.status}/>;
+    } else {
+      return <></>;
     }
   }
 }
