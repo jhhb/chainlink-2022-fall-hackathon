@@ -1,4 +1,4 @@
-import { fetchStatus, roll} from './datasource';
-import { Poller} from './poller'
+import { fetchStatus, roll } from "./datasource";
+import { Poller } from "./poller";
 
-export {fetchStatus, roll, Poller}
+export { fetchStatus, roll, Poller };

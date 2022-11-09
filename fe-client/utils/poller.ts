@@ -1,5 +1,5 @@
-import { Statuses } from '../components/AuthenticatedActions';
-import { fetchStatus } from './index';
+import { Statuses } from "../components/AuthenticatedActions";
+import { fetchStatus } from "./index";
 
 export type PollerCallback = (value: Statuses) => void;
 
@@ -16,26 +16,26 @@ export class Poller {
   static instance?: Poller;
   static isRunning: boolean;
 
-  public static buildAndStart(account: string, interval: number, callback: PollerCallback): Poller | undefined {
+  public static buildAndStart(
+    account: string,
+    interval: number,
+    callback: PollerCallback
+  ): Poller | undefined {
     if (Poller.isRunning) {
       return Poller.instance;
     } else {
       this.isRunning = true;
-      Poller.instance = new Poller(account, interval)
+      Poller.instance = new Poller(account, interval);
       Poller.instance.start(callback);
-      return Poller.instance
+      return Poller.instance;
     }
   }
 
-
   public start(callback: PollerCallback) {
-    this.id = setInterval(
-      async () => {
-        const latestValue = await fetchStatus(this.account);
-        callback(latestValue);
-      },
-      this.interval
-    );
+    this.id = setInterval(async () => {
+      const latestValue = await fetchStatus(this.account);
+      callback(latestValue);
+    }, this.interval);
   }
 
   public cleanup() {
