@@ -1,43 +1,42 @@
-import { Button } from '@web3uikit/core';
-import React from 'react';
-import { fetchStatus, roll } from '../utils';
+import { Button } from "@web3uikit/core";
+import React from "react";
+import { roll } from "../utils";
 
-type Statuses = 'NONE' | 'RUNNING' | 'RAN'
+export type Statuses = "NONE" | "RUNNING" | "RAN";
 
 interface AuthenticatedActionsProps {
   account: string;
+  status: Statuses;
 }
 interface AuthenticatedActionsState {
-  status: Statuses | undefined;
+
 }
-export class AuthenticatedActions extends React.Component<AuthenticatedActionsProps, AuthenticatedActionsState> {
+export class AuthenticatedActions extends React.Component<
+  AuthenticatedActionsProps,
+  AuthenticatedActionsState
+> {
+
   constructor(props: AuthenticatedActionsProps) {
     super(props);
-    this.state = {status: undefined};
+    this.state = { status: undefined };
   }
 
   public async componentDidMount() {
-    const status = await fetchStatus(this.props.account);
-    // TODO: JB
-    // @ts-ignore
-    this.setState({status})
+    console.log("componentDidMount");
   }
 
-  handleClick = async () => {
+  private handleClick = async () => {
+    console.log('handleClick');
     const r = await roll();
-
-    // TODO: JB
-    // This can be used for reading events if needed
-    // const nextResult = await r.wait(1)
-  }
+  };
 
   public render() {
-    const disabled = false
+    const disabled = this.props.status === 'RUNNING';
     const loading = false;
-    const buttonText = 'Roll';
+    const buttonText = "Roll";
     return (
       <>
-        <h2>Status: {this.state.status}</h2>
+        <h2>Polled Status: {this.props.status}</h2>
         <h2>You are authenticated!</h2>
         <div>
           <Button
@@ -49,6 +48,6 @@ export class AuthenticatedActions extends React.Component<AuthenticatedActionsPr
           />
         </div>
       </>
-    )
+    );
   }
 }

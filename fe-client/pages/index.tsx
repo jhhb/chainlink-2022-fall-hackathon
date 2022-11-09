@@ -1,11 +1,12 @@
-import Head from 'next/head'
-import {AuthenticatedActions} from '../components/AuthenticatedActions';
-import {UnauthenticatedActions} from '../components/UnauthenticatedActions';
-import styles from '../styles/Home.module.css'
-import { useMoralis } from 'react-moralis';
+import Head from "next/head";
+import {AuthenticatedActionsProvider} from '../components/AuthenticatedActionsProvider';
+import { UnauthenticatedActions } from "../components/UnauthenticatedActions";
+import styles from "../styles/Home.module.css";
+import { useMoralis } from "react-moralis";
 
 export default function Home() {
   const { isWeb3Enabled, account } = useMoralis();
+
   return (
     <div className={styles.container}>
       <Head>
@@ -15,12 +16,14 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-          { isWeb3Enabled && account ? <AuthenticatedActions account={account}/> : <UnauthenticatedActions/> }
+        {isWeb3Enabled && account ? (
+          <AuthenticatedActionsProvider account={account} />
+        ) : (
+          <UnauthenticatedActions />
+        )}
       </main>
 
-      <footer className={styles.footer}>
-        TODO footer.
-      </footer>
+      <footer className={styles.footer}>TODO footer.</footer>
     </div>
   );
 }
