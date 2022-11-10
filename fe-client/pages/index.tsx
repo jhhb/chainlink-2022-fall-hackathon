@@ -3,10 +3,13 @@ import { AuthenticatedActionsProvider } from "../components/AuthenticatedActions
 import { UnauthenticatedActions } from "../components/UnauthenticatedActions";
 import styles from "../styles/Home.module.css";
 import { useMoralis } from "react-moralis";
+import { Hero } from "@web3uikit/core";
+import {COLORS} from '../utils';
 
 export default function Home() {
-  const { isWeb3Enabled, account, chainId } = useMoralis();
+  const { isWeb3Enabled, account, web3} = useMoralis();
   const renderAuthenticatedContent = isWeb3Enabled && account;
+  const chainId: number | undefined = web3?.network?.chainId;
 
   return (
     <div className={styles.container}>
@@ -32,13 +35,13 @@ export default function Home() {
 }
 
 interface AuthenticatedContentProps {
-  chainId: string | null;
+  chainId?: number;
   account: string;
 }
 
 function AuthenticatedContent(props: AuthenticatedContentProps) {
   const { chainId, account } = props;
-  const supportedChainId = chainId && isSupportedChainId(chainId.toString());
+  const supportedChainId = chainId && isSupportedChainId(chainId);
   if (supportedChainId) {
     return <AuthenticatedActionsProvider account={account} />;
   } else {
@@ -47,8 +50,8 @@ function AuthenticatedContent(props: AuthenticatedContentProps) {
 }
 
 // TODO: JB - Clean this up. Also look into using the "underlying network changed" Moralis trigger.
-function isSupportedChainId(chainId: string): boolean {
-  const hardhatChainId = "0x7a69";
-  const goerliChainId = "0x5";
+function isSupportedChainId(chainId: number): boolean {
+  const hardhatChainId = 31337;
+  const goerliChainId = 5;
   return [hardhatChainId, goerliChainId].includes(chainId);
 }
