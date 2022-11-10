@@ -1,16 +1,18 @@
-import {COLORS, isSupportedChainId} from '../utils';
+import { COLORS } from "../utils";
 import { AuthenticatedActionsProvider } from "../components/AuthenticatedActionsProvider";
-import {Footer} from '../components/Footer';
+import { Footer } from "../components/Footer";
 import Head from "next/head";
 import { Hero } from "@web3uikit/core";
 import { UnauthenticatedActions } from "../components/UnauthenticatedActions";
 import styles from "../styles/Home.module.css";
 import { useMoralis } from "react-moralis";
+import { SupportedChain, findSupportedChain } from "../utils/config";
 
 export default function Home() {
-  const { isWeb3Enabled, account, web3} = useMoralis();
+  const { isWeb3Enabled, account, web3 } = useMoralis();
   const renderAuthenticatedContent = isWeb3Enabled && account;
   const chainId: number | undefined = web3?.network?.chainId;
+  const resolvedChain = findSupportedChain(chainId);
 
   return (
     <div className={styles.container}>
@@ -32,26 +34,27 @@ export default function Home() {
 
       <main className={styles.main}>
         {renderAuthenticatedContent ? (
-          <AuthenticatedContent account={account} chainId={chainId} />
+          <AuthenticatedContent account={account} chain={resolvedChain} />
         ) : (
           <UnauthenticatedActions />
         )}
       </main>
-      <Footer/>
+      <Footer />
     </div>
   );
 }
 
 interface AuthenticatedContentProps {
-  chainId?: number;
+  chain?: SupportedChain;
   account: string;
 }
 
 function AuthenticatedContent(props: AuthenticatedContentProps) {
-  const { chainId, account } = props;
-  const supportedChainId = chainId && isSupportedChainId(chainId);
-  if (supportedChainId) {
-    return <AuthenticatedActionsProvider account={account} />;
+  const { chain, account } = props;
+  if (chain) {
+    return (
+      <AuthenticatedActionsProvider account={account} currentChain={chain} />
+    );
   } else {
     return <div>Chain is not supported</div>;
   }

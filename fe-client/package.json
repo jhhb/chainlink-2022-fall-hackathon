@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "yarn prettier; next lint; eslint",
-    "prettier": "prettier --write components utils"
+    "prettier": "prettier --write components utils pages"
   },
   "dependencies": {
     "@types/node": "18.11.9",

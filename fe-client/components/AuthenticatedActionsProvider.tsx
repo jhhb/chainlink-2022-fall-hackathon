@@ -1,9 +1,11 @@
 import * as React from "react";
+import { SupportedChain } from "../utils/config";
 import { AuthenticatedActions, Statuses } from "./AuthenticatedActions";
 import { Poller, fetchStatus } from "../utils";
 
 interface Props {
   account: string;
+  currentChain: SupportedChain;
 }
 
 export class AuthenticatedActionsProvider extends React.Component<
@@ -48,6 +50,7 @@ export class AuthenticatedActionsProvider extends React.Component<
         <AuthenticatedActions
           account={this.props.account}
           status={this.state.status}
+          currentChain={this.props.currentChain}
         />
       );
     } else {

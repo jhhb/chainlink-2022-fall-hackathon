@@ -1,4 +1,4 @@
-interface SupportedChain {
+export interface SupportedChain {
   chainId: number;
   chain: string;
   name: string;
@@ -28,4 +28,12 @@ function isSupportedChainId(chainId: number): boolean {
   return chainIds.includes(chainId);
 }
 
-export { isSupportedChainId, SUPPORTED_CHAINS };
+function findSupportedChain(chainId?: number): SupportedChain | undefined {
+  if (chainId) {
+    return SUPPORTED_CHAINS.find((chain) => chain.chainId === chainId);
+  } else {
+    return undefined;
+  }
+}
+
+export { findSupportedChain, SUPPORTED_CHAINS };
