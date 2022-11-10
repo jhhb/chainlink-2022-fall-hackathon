@@ -1,5 +1,5 @@
 import * as React from "react";
-import { fetchStatus, Poller } from "../utils";
+import { Poller, fetchStatus } from "../utils";
 import { AuthenticatedActions, Statuses } from "./AuthenticatedActions";
 
 interface Props {

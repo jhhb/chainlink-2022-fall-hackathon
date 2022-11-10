@@ -2,6 +2,7 @@
   "extends": "next/core-web-vitals",
   "rules": {
     "semi": "error",
-    "no-console": "warn"
+    "no-console": "warn",
+    "sort-imports": "warn"
   }
 }

@@ -17,7 +17,7 @@
 }
 
 .ball-black-outer {
-  background: radial-gradient(farthest-corner at 40px 40px, #666, black);
+  background: radial-gradient(farthest-corner at 40px 40px, #0c162c, black);
   width: 220px;
   height: 220px;
   border-radius: 100%;
@@ -50,8 +50,8 @@
   width: 200px;
   height: 50px;
   border-radius: 50%;
-  background-color: #927608;
-  opacity: 0.4;
+  background-color: #a0b3f2;
+  opacity: 1;
   animation: scale 2s ease-in infinite;
 }
 

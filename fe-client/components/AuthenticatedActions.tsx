@@ -1,8 +1,9 @@
-import { Button, Input } from "@web3uikit/core";
 import * as React from "react";
 import { askQuestion } from "../utils";
+import { AskButton } from "./AskButton";
 import { MagicEightBall } from "./MagicEightBall";
 import styles from "../styles/AuthenticatedActions.module.css";
+import { QuestionInput } from "./QuestionInput";
 
 export type Statuses = "NONE" | "RUNNING" | "RAN";
 
@@ -35,6 +36,8 @@ export class AuthenticatedActions extends React.Component<
   }
 
   private handleClick = async () => {
+    // TODO: JB - Add try / catch here in case user cancels transaction
+    console.log("handleClick");
     const { status } = this.props;
     this.setState({
       awaitingClickResult: true,
@@ -82,11 +85,11 @@ export class AuthenticatedActions extends React.Component<
       awaitingClickResult || [intendedNextStatus, status].includes("RUNNING");
 
     const buttonProps = {
-      theme: "primary" as "primary",
       onClick: this.handleClick,
       disabled: isButtonDisabled || inputState === "error",
       isLoading: awaitingClickResult,
-      text: buttonText(status, intendedNextStatus),
+      status,
+      intendedNextStatus,
     };
 
     const inputProps = {
@@ -97,54 +100,33 @@ export class AuthenticatedActions extends React.Component<
 
     return (
       <>
-        <h2>Polled Status: {status}</h2>
-        <h2>Intended Next status: {intendedNextStatus}</h2>
+        {this.maybeRenderDevDebuggerContent(status, intendedNextStatus)}
         <h2>You are authenticated!</h2>
         <MagicEightBall />
         <QuestionInput {...inputProps} />
         <div className={styles["button-wrapper"]}>
-          <Button {...buttonProps} />
+          <AskButton {...buttonProps} />
         </div>
       </>
     );
   }
-}
 
-interface QuestionInputArgs {
-  value: string;
-  handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  state: "disabled" | "initial" | "error";
-}
-
-function QuestionInput(props: QuestionInputArgs) {
-  const { value, state } = props;
-
-  return (
-    <Input
-      errorMessage="Question must be 1 and 60 characters!"
-      label="Ask the Magic Eight Ball a question..."
-      size="large"
-      type="text"
-      state={state}
-      onChange={props.handleChange}
-      value={value}
-    />
-  );
-}
-
-function buttonText(
-  currentStatus: Statuses,
-  intendedNextStatus: Statuses | undefined
-): string {
-  const statusToConsult = intendedNextStatus || currentStatus;
-  switch (statusToConsult) {
-    case "RUNNING":
-      return "Awaiting Completion...";
-    case "RAN":
-      return "Run again?";
-    case "NONE":
-      return "Run";
-  }
+  private maybeRenderDevDebuggerContent = (
+    status: Statuses,
+    intendedNextStatus: Statuses | undefined
+  ) => {
+    const shouldRender = false;
+    if (shouldRender) {
+      return (
+        <>
+          <h2>Polled Status: {status}</h2>
+          <h2>Intended Next status: {intendedNextStatus}</h2>
+        </>
+      );
+    } else {
+      return undefined;
+    }
+  };
 }
 
 function nextStatus(currentStatus: Statuses) {

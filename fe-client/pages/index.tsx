@@ -1,12 +1,16 @@
 import Head from "next/head";
 import { AuthenticatedActionsProvider } from "../components/AuthenticatedActionsProvider";
+import {Footer} from '../components/Footer';
 import { UnauthenticatedActions } from "../components/UnauthenticatedActions";
 import styles from "../styles/Home.module.css";
 import { useMoralis } from "react-moralis";
+import { Hero } from "@web3uikit/core";
+import {COLORS, isSupportedChainId} from '../utils';
 
 export default function Home() {
-  const { isWeb3Enabled, account, chainId } = useMoralis();
+  const { isWeb3Enabled, account, web3} = useMoralis();
   const renderAuthenticatedContent = isWeb3Enabled && account;
+  const chainId: number | undefined = web3?.network?.chainId;
 
   return (
     <div className={styles.container}>
@@ -16,6 +20,16 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      <header className={styles.header}>
+        <Hero
+          align="right"
+          rounded="0px"
+          textColor={COLORS.white}
+          title="The World's First Verifiably Random Magic 8 Ball"
+          backgroundColor={COLORS.biscay}
+        />
+      </header>
+
       <main className={styles.main}>
         {renderAuthenticatedContent ? (
           <AuthenticatedContent account={account} chainId={chainId} />
@@ -23,32 +37,22 @@ export default function Home() {
           <UnauthenticatedActions />
         )}
       </main>
-
-      <footer className={styles.footer}>
-        <div>Made by James Boyle</div>
-      </footer>
+      <Footer/>
     </div>
   );
 }
 
 interface AuthenticatedContentProps {
-  chainId: string | null;
+  chainId?: number;
   account: string;
 }
 
 function AuthenticatedContent(props: AuthenticatedContentProps) {
   const { chainId, account } = props;
-  const supportedChainId = chainId && isSupportedChainId(chainId.toString());
+  const supportedChainId = chainId && isSupportedChainId(chainId);
   if (supportedChainId) {
     return <AuthenticatedActionsProvider account={account} />;
   } else {
     return <div>Chain is not supported</div>;
   }
-}
-
-// TODO: JB - Clean this up. Also look into using the "underlying network changed" Moralis trigger.
-function isSupportedChainId(chainId: string): boolean {
-  const hardhatChainId = "0x7a69";
-  const goerliChainId = "0x5";
-  return [hardhatChainId, goerliChainId].includes(chainId);
 }
