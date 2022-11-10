@@ -1,16 +1,12 @@
-import Icon from '@web3auth/ui/src/components/Icon';
 import Head from "next/head";
-import {AuthenticatedActionsProvider} from '../components/AuthenticatedActionsProvider';
+import { AuthenticatedActionsProvider } from "../components/AuthenticatedActionsProvider";
 import { UnauthenticatedActions } from "../components/UnauthenticatedActions";
 import styles from "../styles/Home.module.css";
 import { useMoralis } from "react-moralis";
-import * as Icons from "@web3uikit/icons";
 
 export default function Home() {
-  // TODO: JB -- We should check the enabled chainId here, and then render (or not) based on if the chain is supported.
-  // we can use chainId from useMoralis.
-  // Unfortunately this behavior may require lifting up the state of the poller, or using a ref.
-  const { isWeb3Enabled, account } = useMoralis();
+  const { isWeb3Enabled, account, chainId } = useMoralis();
+  const renderAuthenticatedContent = isWeb3Enabled && account;
 
   return (
     <div className={styles.container}>
@@ -21,18 +17,38 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        {isWeb3Enabled && account ? (
-          <AuthenticatedActionsProvider account={account} />
+        {renderAuthenticatedContent ? (
+          <AuthenticatedContent account={account} chainId={chainId} />
         ) : (
           <UnauthenticatedActions />
         )}
       </main>
 
       <footer className={styles.footer}>
-        <div>
-          Made by James Boyle
-        </div>
+        <div>Made by James Boyle</div>
       </footer>
     </div>
   );
+}
+
+interface AuthenticatedContentProps {
+  chainId: string | null;
+  account: string;
+}
+
+function AuthenticatedContent(props: AuthenticatedContentProps) {
+  const { chainId, account } = props;
+  const supportedChainId = chainId && isSupportedChainId(chainId.toString());
+  if (supportedChainId) {
+    return <AuthenticatedActionsProvider account={account} />;
+  } else {
+    return <div>Chain is not supported</div>;
+  }
+}
+
+// TODO: JB - Clean this up. Also look into using the "underlying network changed" Moralis trigger.
+function isSupportedChainId(chainId: string): boolean {
+  const hardhatChainId = "0x7a69";
+  const goerliChainId = "0x5";
+  return [hardhatChainId, goerliChainId].includes(chainId);
 }
