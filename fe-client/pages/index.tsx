@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { AuthenticatedActionsProvider } from "../components/AuthenticatedActionsProvider";
+import {Footer} from '../components/Footer';
 import { UnauthenticatedActions } from "../components/UnauthenticatedActions";
 import styles from "../styles/Home.module.css";
 import { useMoralis } from "react-moralis";
@@ -36,10 +37,7 @@ export default function Home() {
           <UnauthenticatedActions />
         )}
       </main>
-
-      <footer className={styles.footer}>
-        <div>Made by James Boyle</div>
-      </footer>
+      <Footer/>
     </div>
   );
 }

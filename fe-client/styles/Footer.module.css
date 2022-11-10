@@ -1,0 +1,25 @@
+.top {
+  border-top: 1px solid black;
+  height: 7vh;
+  justify-content: space-between;
+  display: flex;
+  flex: 1;
+  align-items: center;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.item > * {
+  padding: 0.3rem 0
+}
+
+.link-to a {
+  color: #375bd2;
+  font-family: inherit;
+}
+
+

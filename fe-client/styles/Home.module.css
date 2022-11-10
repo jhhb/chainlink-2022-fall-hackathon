@@ -15,22 +15,6 @@
   align-items: center;
 }
 
-.footer {
-  display: flex;
-  flex: 1;
-  border-top: 1px solid black;
-  justify-content: center;
-  align-items: center;
-  height: 8vh;
-}
-
-.footer a {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-grow: 1;
-}
-
 .title a {
   color: #0070f3;
   text-decoration: none;
