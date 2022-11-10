@@ -1,9 +1,9 @@
 import * as React from "react";
-import { askQuestion } from "../utils";
 import { AskButton } from "./AskButton";
 import { MagicEightBall } from "./MagicEightBall";
-import styles from "../styles/AuthenticatedActions.module.css";
 import { QuestionInput } from "./QuestionInput";
+import { askQuestion } from "../utils";
+import styles from "../styles/AuthenticatedActions.module.css";
 
 export type Statuses = "NONE" | "RUNNING" | "RAN";
 

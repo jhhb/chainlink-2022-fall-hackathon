@@ -1,5 +1,5 @@
-import styles from "../styles/MagicEightBall.module.css";
 import * as React from "react";
+import styles from "../styles/MagicEightBall.module.css";
 
 interface Props {
   answer?: string;

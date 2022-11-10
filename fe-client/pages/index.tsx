@@ -1,11 +1,11 @@
-import Head from "next/head";
+import {COLORS, isSupportedChainId} from '../utils';
 import { AuthenticatedActionsProvider } from "../components/AuthenticatedActionsProvider";
 import {Footer} from '../components/Footer';
+import Head from "next/head";
+import { Hero } from "@web3uikit/core";
 import { UnauthenticatedActions } from "../components/UnauthenticatedActions";
 import styles from "../styles/Home.module.css";
 import { useMoralis } from "react-moralis";
-import { Hero } from "@web3uikit/core";
-import {COLORS, isSupportedChainId} from '../utils';
 
 export default function Home() {
   const { isWeb3Enabled, account, web3} = useMoralis();
