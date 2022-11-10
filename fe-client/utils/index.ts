@@ -1,6 +1,6 @@
 import { COLORS } from "./colors";
 import { isSupportedChainId } from "./config";
-import { fetchStatus, askQuestion } from "./datasource";
+import { askQuestion, fetchStatus } from "./datasource";
 import { Poller } from "./poller";
 
 export { fetchStatus, askQuestion, Poller, COLORS, isSupportedChainId };

@@ -1,6 +1,7 @@
+/* Note: Don't change this; if you want to tweak spacing, tweak the other styles in Home.module.css */
 .top {
   border-top: 1px solid black;
-  height: 7vh;
+  height: 6vh;
   justify-content: space-between;
   display: flex;
   flex: 1;

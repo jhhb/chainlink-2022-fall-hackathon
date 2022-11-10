@@ -40,10 +40,10 @@ function buttonText(
   const statusToConsult = intendedNextStatus || currentStatus;
   switch (statusToConsult) {
     case "RUNNING":
-      return "Awaiting Completion...";
+      return "Awaiting an answer";
     case "RAN":
-      return "Run again?";
+      return "Ask again?";
     case "NONE":
-      return "Run";
+      return "Ask";
   }
 }
