@@ -4,7 +4,7 @@ import { UnauthenticatedActions } from "../components/UnauthenticatedActions";
 import styles from "../styles/Home.module.css";
 import { useMoralis } from "react-moralis";
 import { Hero } from "@web3uikit/core";
-import {COLORS} from '../utils';
+import {COLORS, isSupportedChainId} from '../utils';
 
 export default function Home() {
   const { isWeb3Enabled, account, web3} = useMoralis();
@@ -57,11 +57,4 @@ function AuthenticatedContent(props: AuthenticatedContentProps) {
   } else {
     return <div>Chain is not supported</div>;
   }
-}
-
-// TODO: JB - Clean this up. Also look into using the "underlying network changed" Moralis trigger.
-function isSupportedChainId(chainId: number): boolean {
-  const hardhatChainId = 31337;
-  const goerliChainId = 5;
-  return [hardhatChainId, goerliChainId].includes(chainId);
 }
