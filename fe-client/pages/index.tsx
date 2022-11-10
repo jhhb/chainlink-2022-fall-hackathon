@@ -5,6 +5,9 @@ import styles from "../styles/Home.module.css";
 import { useMoralis } from "react-moralis";
 
 export default function Home() {
+  // TODO: JB -- We should check the enabled chainId here, and then render (or not) based on if the chain is supported.
+  // we can use chainId from useMoralis.
+  // Unfortunately this behavior may require lifting up the state of the poller, or using a ref.
   const { isWeb3Enabled, account } = useMoralis();
 
   return (

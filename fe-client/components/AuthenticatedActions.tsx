@@ -1,7 +1,8 @@
-import { Button } from "@web3uikit/core";
-import React from "react";
+import { Button, Input } from "@web3uikit/core";
+import * as React from "react";
 import { askQuestion } from "../utils";
 import { MagicEightBall } from "./MagicEightBall";
+import styles from "../styles/AuthenticatedActions.module.css";
 
 export type Statuses = "NONE" | "RUNNING" | "RAN";
 
@@ -10,9 +11,13 @@ interface AuthenticatedActionsProps {
   status: Statuses;
 }
 
+type InputState = "disabled" | "initial" | "error";
+
 interface AuthenticatedActionsState {
   awaitingClickResult: boolean;
   intendedNextStatus: Statuses | undefined;
+  inputValue: string;
+  inputState: InputState;
 }
 
 export class AuthenticatedActions extends React.Component<
@@ -21,7 +26,12 @@ export class AuthenticatedActions extends React.Component<
 > {
   constructor(props: AuthenticatedActionsProps) {
     super(props);
-    this.state = { awaitingClickResult: false, intendedNextStatus: undefined };
+    this.state = {
+      awaitingClickResult: false,
+      intendedNextStatus: undefined,
+      inputValue: "",
+      inputState: "initial",
+    };
   }
 
   private handleClick = async () => {
@@ -52,34 +62,74 @@ export class AuthenticatedActions extends React.Component<
     }
   }
 
+  private handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.currentTarget;
+    const valueIsValid = value.length && value.length <= 60;
+    const nextInputStateValue: InputState = valueIsValid ? "initial" : "error";
+    const nextState = { inputValue: value, inputState: nextInputStateValue };
+
+    this.setState(nextState);
+  };
+
   public render() {
-    const { awaitingClickResult, intendedNextStatus } = this.state;
+    const { awaitingClickResult, intendedNextStatus, inputValue, inputState } =
+      this.state;
     const { status } = this.props;
 
     // Handles the case where we are currently running for a user,
     // and the case where a user has just initiated a request;
-    const disabled =
+    const isButtonDisabled =
       awaitingClickResult || [intendedNextStatus, status].includes("RUNNING");
-    const loading = awaitingClickResult;
-    const text = buttonText(status, intendedNextStatus);
+
+    const buttonProps = {
+      theme: "primary" as "primary",
+      onClick: this.handleClick,
+      disabled: isButtonDisabled || inputState === "error",
+      isLoading: awaitingClickResult,
+      text: buttonText(status, intendedNextStatus),
+    };
+
+    const inputProps = {
+      value: inputValue,
+      handleChange: this.handleInputChange,
+      state: isButtonDisabled ? "disabled" : inputState,
+    };
+
     return (
       <>
         <h2>Polled Status: {status}</h2>
         <h2>Intended Next status: {intendedNextStatus}</h2>
         <h2>You are authenticated!</h2>
         <MagicEightBall />
-        <div>
-          <Button
-            theme="primary"
-            onClick={this.handleClick}
-            disabled={disabled}
-            isLoading={loading}
-            text={text}
-          />
+        <QuestionInput {...inputProps} />
+        <div className={styles["button-wrapper"]}>
+          <Button {...buttonProps} />
         </div>
       </>
     );
   }
+}
+
+interface QuestionInputArgs {
+  value: string;
+  handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  state: "disabled" | "initial" | "error";
+}
+
+function QuestionInput(props: QuestionInputArgs) {
+  const { value, state } = props;
+
+  return (
+    <Input
+      errorMessage="Question must be 1 and 60 characters!"
+      label="Ask the Magic Eight Ball a question..."
+      size="large"
+      type="text"
+      state={state}
+      onChange={props.handleChange}
+      value={value}
+    />
+  );
 }
 
 function buttonText(

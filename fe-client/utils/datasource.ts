@@ -18,7 +18,6 @@ export async function fetchStatus(address: string): Promise<Statuses> {
   return result;
 }
 
-// TODO: JB
 export async function askQuestion(): Promise<
   ReturnType<Moralis["executeFunction"]>
 > {
