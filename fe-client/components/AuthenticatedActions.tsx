@@ -1,4 +1,3 @@
-import { Button, Input } from "@web3uikit/core";
 import * as React from "react";
 import { askQuestion } from "../utils";
 import { AskButton } from "./AskButton";
@@ -101,8 +100,7 @@ export class AuthenticatedActions extends React.Component<
 
     return (
       <>
-        <h2>Polled Status: {status}</h2>
-        <h2>Intended Next status: {intendedNextStatus}</h2>
+        {this.maybeRenderDevDebuggerContent(status, intendedNextStatus)}
         <h2>You are authenticated!</h2>
         <MagicEightBall />
         <QuestionInput {...inputProps} />
@@ -112,6 +110,23 @@ export class AuthenticatedActions extends React.Component<
       </>
     );
   }
+
+  private maybeRenderDevDebuggerContent = (
+    status: Statuses,
+    intendedNextStatus: Statuses | undefined
+  ) => {
+    const shouldRender = false;
+    if (shouldRender) {
+      return (
+        <>
+          <h2>Polled Status: {status}</h2>
+          <h2>Intended Next status: {intendedNextStatus}</h2>
+        </>
+      );
+    } else {
+      return undefined;
+    }
+  };
 }
 
 function nextStatus(currentStatus: Statuses) {
