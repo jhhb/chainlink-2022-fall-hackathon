@@ -1,15 +1,17 @@
 import * as React from "react";
-import { askQuestion } from "../utils";
+import { SupportedChain } from "../utils/config";
 import { AskButton } from "./AskButton";
 import { MagicEightBall } from "./MagicEightBall";
-import styles from "../styles/AuthenticatedActions.module.css";
 import { QuestionInput } from "./QuestionInput";
+import { askQuestion } from "../utils";
+import styles from "../styles/AuthenticatedActions.module.css";
 
 export type Statuses = "NONE" | "RUNNING" | "RAN";
 
 interface AuthenticatedActionsProps {
   account: string;
   status: Statuses;
+  currentChain: SupportedChain;
 }
 
 type InputState = "disabled" | "initial" | "error";
@@ -77,7 +79,7 @@ export class AuthenticatedActions extends React.Component<
   public render() {
     const { awaitingClickResult, intendedNextStatus, inputValue, inputState } =
       this.state;
-    const { status } = this.props;
+    const { status, currentChain } = this.props;
 
     // Handles the case where we are currently running for a user,
     // and the case where a user has just initiated a request;
@@ -101,7 +103,7 @@ export class AuthenticatedActions extends React.Component<
     return (
       <>
         {this.maybeRenderDevDebuggerContent(status, intendedNextStatus)}
-        <h2>You are authenticated!</h2>
+        <h2>You are authenticated to the {currentChain.name} network!</h2>
         <MagicEightBall />
         <QuestionInput {...inputProps} />
         <div className={styles["button-wrapper"]}>

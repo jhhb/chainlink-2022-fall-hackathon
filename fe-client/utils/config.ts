@@ -1,12 +1,19 @@
-export const SUPPORTED_CHAINS = [
+export interface SupportedChain {
+  chainId: number;
+  chain: string;
+  name: string;
+  network: string;
+}
+
+const SUPPORTED_CHAINS: Array<SupportedChain> = [
   {
-    chainId: 0x5,
+    chainId: 5,
     chain: "Eth",
     name: "Goerli",
     network: "testnet",
   },
   {
-    chainId: 0x7a69,
+    chainId: 31337,
     chain: "Hardhat local dev",
     name: "Hardhat",
     network: "hardhat",
@@ -21,4 +28,12 @@ function isSupportedChainId(chainId: number): boolean {
   return chainIds.includes(chainId);
 }
 
-export { isSupportedChainId };
+function findSupportedChain(chainId?: number): SupportedChain | undefined {
+  if (chainId) {
+    return SUPPORTED_CHAINS.find((chain) => chain.chainId === chainId);
+  } else {
+    return undefined;
+  }
+}
+
+export { findSupportedChain, SUPPORTED_CHAINS };

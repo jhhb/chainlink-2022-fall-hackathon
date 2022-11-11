@@ -1,6 +1,6 @@
+import { COLORS } from "../utils";
 import { Input } from "@web3uikit/core";
 import * as React from "react";
-import { COLORS } from "../utils";
 
 interface QuestionInputProps {
   value: string;

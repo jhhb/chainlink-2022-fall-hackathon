@@ -1,11 +1,12 @@
-import Moralis from "moralis-v1";
-import { Statuses } from "../components/AuthenticatedActions";
 import {
   CONTRACT_ABI,
   GET_STATUS_FUNCTION_NAME,
   LOCALHOST_CONTRACT_ADDRESS,
   START_FUNCTION_NAME,
 } from "../constants";
+
+import Moralis from "moralis-v1";
+import { Statuses } from "../components/AuthenticatedActions";
 
 export async function fetchStatus(address: string): Promise<Statuses> {
   // @ts-ignore
