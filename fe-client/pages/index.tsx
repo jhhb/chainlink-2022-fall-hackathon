@@ -10,7 +10,6 @@ import { SupportedChain, findSupportedChain } from "../utils/config";
 
 export default function Home() {
   const { isWeb3Enabled, account, web3 } = useMoralis();
-  const renderAuthenticatedContent = isWeb3Enabled && account;
   const chainId: number | undefined = web3?.network?.chainId;
   const resolvedChain = findSupportedChain(chainId);
 
@@ -33,29 +32,34 @@ export default function Home() {
       </header>
 
       <main className={styles.main}>
-        {renderAuthenticatedContent ? (
-          <AuthenticatedContent account={account} chain={resolvedChain} />
-        ) : (
-          <UnauthenticatedActions />
-        )}
+        <InnerContent
+          isWeb3Enabled={isWeb3Enabled}
+          account={account}
+          chain={resolvedChain}
+        />
       </main>
       <Footer />
     </div>
   );
 }
 
-interface AuthenticatedContentProps {
-  chain?: SupportedChain;
-  account: string;
+interface InnerContentProps {
+  isWeb3Enabled: boolean;
+  account: string | null;
+  chain: SupportedChain | undefined;
 }
 
-function AuthenticatedContent(props: AuthenticatedContentProps) {
-  const { chain, account } = props;
-  if (chain) {
-    return (
-      <AuthenticatedActionsProvider account={account} currentChain={chain} />
-    );
+function InnerContent(props: InnerContentProps) {
+  const { isWeb3Enabled, account, chain } = props;
+  if (isWeb3Enabled && account) {
+    if (chain) {
+      return (
+        <AuthenticatedActionsProvider account={account} currentChain={chain} />
+      );
+    } else {
+      return <div>Chain is not supported</div>;
+    }
   } else {
-    return <div>Chain is not supported</div>;
+    return <UnauthenticatedActions />;
   }
 }
