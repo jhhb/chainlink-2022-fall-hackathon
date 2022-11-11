@@ -69,7 +69,7 @@ export class AuthenticatedActions extends React.Component<
 
   private handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.currentTarget;
-    const valueIsValid = value.length && value.length <= 60;
+    const valueIsValid = inputLengthIsValid(value);
     const nextInputStateValue: InputState = valueIsValid ? "initial" : "error";
     const nextState = { inputValue: value, inputState: nextInputStateValue };
 
@@ -83,12 +83,14 @@ export class AuthenticatedActions extends React.Component<
 
     // Handles the case where we are currently running for a user,
     // and the case where a user has just initiated a request;
-    const isButtonDisabled =
+    const disabledStatus =
       awaitingClickResult || [intendedNextStatus, status].includes("RUNNING");
+    const inputLengthIsInvalid = !inputLengthIsValid(inputValue);
 
     const buttonProps = {
       onClick: this.handleClick,
-      disabled: isButtonDisabled || inputState === "error",
+      disabled:
+        disabledStatus || inputState === "error" || inputLengthIsInvalid,
       isLoading: awaitingClickResult,
       status,
       intendedNextStatus,
@@ -97,7 +99,7 @@ export class AuthenticatedActions extends React.Component<
     const inputProps = {
       value: inputValue,
       handleChange: this.handleInputChange,
-      state: isButtonDisabled ? "disabled" : inputState,
+      state: disabledStatus ? "disabled" : inputState,
     };
 
     return (
@@ -140,4 +142,8 @@ function nextStatus(currentStatus: Statuses) {
     case "NONE":
       return "RUNNING";
   }
+}
+
+function inputLengthIsValid(value: string): boolean {
+  return value.length > 0 && value.length <= 60;
 }
