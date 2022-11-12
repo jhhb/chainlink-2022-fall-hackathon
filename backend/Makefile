@@ -1,4 +1,4 @@
-.PHONY: test compile lint deploy node console
+.PHONY: test compile lint deploy node console deploy-goerli
 
 test:
 	yarn hardhat test
@@ -17,3 +17,6 @@ node:
 
 console:
 	yarn hardhat console --network localhost
+
+deploy-goerli:
+	yarn hardhat deploy --network goerli;

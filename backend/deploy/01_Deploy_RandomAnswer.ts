@@ -46,7 +46,7 @@ const deployFunction: DeployFunction = async ({ getNamedAccounts, deployments })
         ? 1
         : VERIFICATION_BLOCK_CONFIRMATIONS
 
-    const args = [subscriptionId, vrfCoordinatorAddress, keyHash];
+    const args = [subscriptionId, vrfCoordinatorAddress, keyHash]
     const randomAnswer = await deploy("RandomAnswer", {
         from: deployer,
         args: args,
@@ -58,13 +58,6 @@ const deployFunction: DeployFunction = async ({ getNamedAccounts, deployments })
         log("Verifying...")
         await verify(randomAnswer.address, args)
     }
-
-    // TODO: JB - Update this.
-    log("TODO: RandomNumberConsumer contract with the following command")
-    const networkName = network.name == "hardhat" ? "localhost" : network.name
-    log(
-        `yarn hardhat TODO --contract ${randomAnswer.address} --network ${networkName}`
-    )
     log("----------------------------------------------------")
 }
 
