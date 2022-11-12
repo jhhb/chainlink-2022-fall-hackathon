@@ -8,13 +8,14 @@ import styles from "../styles/AuthenticatedActions.module.css";
 
 export type Statuses = "NONE" | "RUNNING" | "RAN";
 
+type InputState = "disabled" | "initial" | "error";
+
 interface AuthenticatedActionsProps {
   account: string;
   status: Statuses;
   currentChain: SupportedChain;
+  answer?: string;
 }
-
-type InputState = "disabled" | "initial" | "error";
 
 interface AuthenticatedActionsState {
   awaitingClickResult: boolean;
@@ -39,7 +40,6 @@ export class AuthenticatedActions extends React.Component<
 
   private handleClick = async () => {
     // TODO: JB - Add try / catch here in case user cancels transaction
-    console.log("handleClick");
     const { status } = this.props;
     this.setState({
       awaitingClickResult: true,
@@ -79,7 +79,7 @@ export class AuthenticatedActions extends React.Component<
   public render() {
     const { awaitingClickResult, intendedNextStatus, inputValue, inputState } =
       this.state;
-    const { status, currentChain } = this.props;
+    const { status, currentChain, answer } = this.props;
 
     // Handles the case where we are currently running for a user,
     // and the case where a user has just initiated a request;
@@ -102,11 +102,16 @@ export class AuthenticatedActions extends React.Component<
       state: disabledStatus ? "disabled" : inputState,
     };
 
+    const ballProps = {
+      answer,
+      loading: disabledStatus,
+    };
+
     return (
       <>
         {this.maybeRenderDevDebuggerContent(status, intendedNextStatus)}
         <h2>You are authenticated to the {currentChain.name} network!</h2>
-        <MagicEightBall />
+        <MagicEightBall {...ballProps} />
         <QuestionInput {...inputProps} />
         <div className={styles["button-wrapper"]}>
           <AskButton {...buttonProps} />
