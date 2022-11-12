@@ -1,8 +1,10 @@
+import { Loading } from "@web3uikit/core";
 import * as React from "react";
 import styles from "../styles/MagicEightBall.module.css";
 
 interface Props {
   answer?: string;
+  loading: boolean;
 }
 
 export class MagicEightBall extends React.Component<Props, {}> {
@@ -11,16 +13,21 @@ export class MagicEightBall extends React.Component<Props, {}> {
   }
 
   render() {
-    const { answer } = this.props;
+    const { answer, loading } = this.props;
+
+    const loadingInnerContent = loading && (
+      <Loading fontSize={70} spinnerType="wave" spinnerColor={"black"} />
+    );
+
+    const answerInnerContent = answer || <div className={styles.eight}>8</div>;
+    const innerContent = loadingInnerContent || answerInnerContent;
 
     return (
       <div className={styles.container}>
         <div className={styles["ball-container"]}>
           <div className={styles["ball-black-outer"]}>
             <div className={styles["ball-white-inner"]}>
-              <div>
-                {answer ? answer : <div className={styles.eight}>8</div>}
-              </div>
+              <div>{innerContent}</div>
             </div>
           </div>
           <div className={styles["ball-shadow"]}></div>

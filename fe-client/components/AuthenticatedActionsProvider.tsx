@@ -1,8 +1,10 @@
+import { Loading } from "@web3uikit/core";
 import * as React from "react";
 import { SupportedChain } from "../utils/config";
 import { getAnswer } from "../utils/datasource";
 import { AuthenticatedActions, Statuses } from "./AuthenticatedActions";
 import { Poller, fetchStatus } from "../utils";
+import { flushSync } from "react-dom";
 
 interface Props {
   account: string;
@@ -11,20 +13,19 @@ interface Props {
 
 interface State {
   status: Statuses | undefined;
-  answer?: string;
-  loadingAnswer: boolean;
+  answer: string | undefined;
 }
+
 export class AuthenticatedActionsProvider extends React.Component<
   Props,
   State
 > {
   private poller?: Poller;
-  // TODO: JB -- maybe adjust this.
-  private readonly POLL_INTERVAL = 3000;
+  private readonly POLL_INTERVAL = 1000;
 
   public constructor(props: Props) {
     super(props);
-    this.state = { status: undefined, answer: undefined, loadingAnswer: false };
+    this.state = { status: undefined, answer: undefined };
   }
 
   public componentWillUnmount() {
@@ -43,14 +44,26 @@ export class AuthenticatedActionsProvider extends React.Component<
     );
   }
 
-  private pollerCallback = (newStatus: Statuses) => {
+  private pollerCallback = async (newStatus: Statuses) => {
     const { status: previousStatus } = this.state;
+    const { account: address } = this.props;
     const statusHasChanged = newStatus !== previousStatus;
     if (statusHasChanged) {
-      console.debug("values differ");
-      this.setState({ status: newStatus });
+      flushSync(() => {
+        this.setState({ status: newStatus });
+      });
+
+      if (newStatus === "RAN") {
+        console.debug("fetching answer...");
+        const answer = await getAnswer(address);
+        console.debug(`Got answer: ${answer}`);
+
+        flushSync(() => {
+          this.setState({ answer });
+        });
+      }
     } else {
-      console.debug("values are the same");
+      // Do nothing.
     }
   };
 
@@ -61,10 +74,12 @@ export class AuthenticatedActionsProvider extends React.Component<
           account={this.props.account}
           status={this.state.status}
           currentChain={this.props.currentChain}
+          answer={this.state.answer}
         />
       );
     } else {
-      return <></>;
+      // TODO: JB
+      return <Loading spinnerColor={"black"} size={100} />;
     }
   }
 }
