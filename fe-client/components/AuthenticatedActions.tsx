@@ -46,11 +46,10 @@ export class AuthenticatedActions extends React.Component<
       intendedNextStatus: nextStatus(status),
     });
     try {
-      const r = await askQuestion();
-      console.log(r);
-    } catch (error) {
-      console.error(error);
-      throw error;
+      await askQuestion();
+    } catch (error: unknown) {
+      handleError(error);
+      this.setState({ intendedNextStatus: undefined });
     } finally {
       this.setState({ awaitingClickResult: false });
     }
@@ -109,7 +108,6 @@ export class AuthenticatedActions extends React.Component<
 
     return (
       <>
-        {this.maybeRenderDevDebuggerContent(status, intendedNextStatus)}
         <h2>You are authenticated to the {currentChain.name} network!</h2>
         <MagicEightBall {...ballProps} />
         <QuestionInput {...inputProps} />
@@ -119,23 +117,6 @@ export class AuthenticatedActions extends React.Component<
       </>
     );
   }
-
-  private maybeRenderDevDebuggerContent = (
-    status: Statuses,
-    intendedNextStatus: Statuses | undefined
-  ) => {
-    const shouldRender = false;
-    if (shouldRender) {
-      return (
-        <>
-          <h2>Polled Status: {status}</h2>
-          <h2>Intended Next status: {intendedNextStatus}</h2>
-        </>
-      );
-    } else {
-      return undefined;
-    }
-  };
 }
 
 function nextStatus(currentStatus: Statuses) {
@@ -151,4 +132,27 @@ function nextStatus(currentStatus: Statuses) {
 
 function inputLengthIsValid(value: string): boolean {
   return value.length > 0 && value.length <= 60;
+}
+
+function handleError(error: unknown): void {
+  const message = `Got error with type: [${typeof error}]`;
+  console.error(message);
+  console.error(error);
+}
+
+function devDebuggerContent(
+  status: Statuses,
+  intendedNextStatus: Statuses | undefined
+) {
+  const shouldRender = false;
+  if (shouldRender) {
+    return (
+      <>
+        <h2>Polled Status: {status}</h2>
+        <h2>Intended Next status: {intendedNextStatus}</h2>
+      </>
+    );
+  } else {
+    return undefined;
+  }
 }
