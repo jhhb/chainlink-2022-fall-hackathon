@@ -10,7 +10,7 @@ lint:
 	yarn solhint contracts/*
 
 deploy:
-	yarn hardhat deploy --network localhost
+	REAL_RUN=1 yarn hardhat deploy --network localhost
 
 node:
 	yarn hardhat node

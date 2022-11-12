@@ -47,16 +47,27 @@ const deployFunction: DeployFunction = async ({ getNamedAccounts, deployments })
         : VERIFICATION_BLOCK_CONFIRMATIONS;
 
     const args = [subscriptionId, vrfCoordinatorAddress, keyHash];
-    const randomAnswer = await deploy("RandomAnswer", {
-        from: deployer,
-        args: args,
-        log: true,
-        waitConfirmations: waitBlockConfirmations,
-    });
 
-    if (!developmentChains.includes(network.name) && process.env.ETHERSCAN_API_KEY) {
-        log("Verifying...");
-        await verify(randomAnswer.address, args);
+    const shouldLog = true;
+    if (process.env.REAL_RUN === "1") {
+        const randomAnswer = await deploy("RandomAnswer", {
+            from: deployer,
+            args: args,
+            log: shouldLog,
+            waitConfirmations: waitBlockConfirmations,
+        });
+
+        if (!developmentChains.includes(network.name) && process.env.ETHERSCAN_API_KEY) {
+            log("Verifying...");
+            await verify(randomAnswer.address, args);
+        }
+    } else {
+        console.log("Deploying as dry run.");
+        console.log("Would deploy like this:");
+        console.log(`from: ${deployer}`);
+        console.log(`args: ${args}`);
+        console.log(`log: ${shouldLog}`);
+        console.log(`waitConfirmations: ${waitBlockConfirmations}`);
     }
     log("----------------------------------------------------");
 };
