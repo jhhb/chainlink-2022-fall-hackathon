@@ -42,7 +42,7 @@ function buttonText(
     case "RUNNING":
       return "Awaiting an answer";
     case "RAN":
-      return "Ask again?";
+      return "Ask";
     case "NONE":
       return "Ask";
   }
