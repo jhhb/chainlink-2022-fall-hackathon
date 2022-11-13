@@ -6,7 +6,7 @@ export interface SupportedChain {
   deployedContractAddress: string;
 }
 
-const LOCALHOST_CONTRACT_ADDRESS = "0xdc64a140aa3e981100a9beca4e685f962f0cf6c9";
+const LOCALHOST_CONTRACT_ADDRESS = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
 const GOERLI_CONTRACT_ADDRESS = "0xe087f2d069b711d839DbD3b2324ac09bae21c9d1";
 
 const SUPPORTED_CHAINS: Array<SupportedChain> = [
