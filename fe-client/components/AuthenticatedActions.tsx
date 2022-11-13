@@ -39,14 +39,13 @@ export class AuthenticatedActions extends React.Component<
   }
 
   private handleClick = async () => {
-    // TODO: JB - Add try / catch here in case user cancels transaction
-    const { status } = this.props;
+    const { status, currentChain } = this.props;
     this.setState({
       awaitingClickResult: true,
       intendedNextStatus: nextStatus(status),
     });
     try {
-      await askQuestion();
+      await askQuestion(currentChain);
     } catch (error: unknown) {
       handleError(error);
       this.setState({ intendedNextStatus: undefined });
