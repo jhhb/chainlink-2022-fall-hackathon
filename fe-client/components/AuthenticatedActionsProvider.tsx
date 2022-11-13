@@ -33,20 +33,31 @@ export class AuthenticatedActionsProvider extends React.Component<
   }
 
   public async componentDidMount() {
-    const { account } = this.props;
-    const initialStatus = await fetchStatus(account);
+    const { account, currentChain } = this.props;
+    const initialStatus = await fetchStatus(account, currentChain);
     this.setState({ status: initialStatus });
 
-    this.poller = Poller.buildAndStart(
-      this.props.account,
-      this.POLL_INTERVAL,
-      this.pollerCallback
-    );
+    this.poller = this.buildAndStartPoller();
+  }
+
+  public componentDidUpdate(
+    prevProps: Props,
+    prevState: State,
+    snapshot?: unknown
+  ) {
+    const { currentChain } = this.props;
+    const connectedNetworkHasChanged =
+      currentChain.chainId !== prevProps.currentChain.chainId;
+
+    if (connectedNetworkHasChanged) {
+      this.poller?.cleanup();
+      this.poller = this.buildAndStartPoller();
+    }
   }
 
   private pollerCallback = async (newStatus: Statuses) => {
     const { status: previousStatus } = this.state;
-    const { account: address } = this.props;
+    const { account: address, currentChain } = this.props;
     const statusHasChanged = newStatus !== previousStatus;
     if (statusHasChanged) {
       flushSync(() => {
@@ -54,9 +65,7 @@ export class AuthenticatedActionsProvider extends React.Component<
       });
 
       if (newStatus === "RAN") {
-        console.debug("fetching answer...");
-        const answer = await getAnswer(address);
-        console.debug(`Got answer: ${answer}`);
+        const answer = await getAnswer(address, currentChain);
 
         flushSync(() => {
           this.setState({ answer });
@@ -66,6 +75,16 @@ export class AuthenticatedActionsProvider extends React.Component<
       // Do nothing.
     }
   };
+
+  private buildAndStartPoller(): Poller | undefined {
+    const { account, currentChain } = this.props;
+    return Poller.buildAndStart(
+      account,
+      this.POLL_INTERVAL,
+      this.pollerCallback,
+      currentChain
+    );
+  }
 
   public render() {
     if (this.state.status) {

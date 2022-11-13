@@ -3,17 +3,20 @@ import {
   CONTRACT_ABI,
   GET_ANSWER_FUNCTION_NAME,
   GET_STATUS_FUNCTION_NAME,
-  LOCALHOST_CONTRACT_ADDRESS,
   START_FUNCTION_NAME,
 } from "../constants";
 
 import Moralis from "moralis-v1";
 import { Statuses } from "../components/AuthenticatedActions";
+import { SupportedChain } from "./config";
 
-export async function fetchStatus(address: string): Promise<Statuses> {
+export async function fetchStatus(
+  address: string,
+  chain: SupportedChain
+): Promise<Statuses> {
   const result = await Moralis.executeFunction({
     abi: CONTRACT_ABI,
-    contractAddress: LOCALHOST_CONTRACT_ADDRESS,
+    contractAddress: chain.deployedContractAddress,
     functionName: GET_STATUS_FUNCTION_NAME,
     params: { addr: address },
   });
@@ -21,23 +24,26 @@ export async function fetchStatus(address: string): Promise<Statuses> {
   return result;
 }
 
-export async function askQuestion(): Promise<
-  ReturnType<Moralis["executeFunction"]>
-> {
+export async function askQuestion(
+  chain: SupportedChain
+): Promise<ReturnType<Moralis["executeFunction"]>> {
   return Moralis.executeFunction({
     abi: CONTRACT_ABI,
-    contractAddress: LOCALHOST_CONTRACT_ADDRESS,
+    contractAddress: chain.deployedContractAddress,
     functionName: START_FUNCTION_NAME,
     params: {},
   });
 }
 
-export async function getAnswer(address: string): Promise<string> {
+export async function getAnswer(
+  userAddress: string,
+  chain: SupportedChain
+): Promise<string> {
   const result = await Moralis.executeFunction({
     abi: CONTRACT_ABI,
-    contractAddress: LOCALHOST_CONTRACT_ADDRESS,
+    contractAddress: chain.deployedContractAddress,
     functionName: GET_ANSWER_FUNCTION_NAME,
-    params: { userAddress: address },
+    params: { userAddress },
   });
   assertIsString(result);
   return result;
