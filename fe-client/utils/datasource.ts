@@ -1,3 +1,5 @@
+import Moralis from "moralis-v1";
+import { Statuses } from "../components/AuthenticatedActions";
 import {
   ALL_STATUSES,
   CONTRACT_ABI,
@@ -5,9 +7,6 @@ import {
   GET_STATUS_FUNCTION_NAME,
   START_FUNCTION_NAME,
 } from "../constants";
-
-import Moralis from "moralis-v1";
-import { Statuses } from "../components/AuthenticatedActions";
 import { SupportedChain } from "./config";
 
 export async function fetchStatus(
@@ -47,6 +46,18 @@ export async function getAnswer(
   });
   assertIsString(result);
   return result;
+}
+
+export async function getAnswerOrUndefined(
+  userAddress: string,
+  chain: SupportedChain
+): Promise<string | undefined> {
+  try {
+    return await getAnswer(userAddress, chain);
+  } catch (_err) {
+    // If the user has never rolled, this case occurs
+    return undefined;
+  }
 }
 
 function assertIsString(value: unknown): asserts value is string {
