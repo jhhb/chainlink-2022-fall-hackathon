@@ -1,9 +1,11 @@
+import { BannerStrip } from "@web3uikit/core";
 import * as React from "react";
 import { SupportedChain } from "../utils/config";
+import { getAnswerOrUndefined } from "../utils/datasource";
 import { AskButton } from "./AskButton";
 import { MagicEightBall } from "./MagicEightBall";
 import { QuestionInput } from "./QuestionInput";
-import { askQuestion } from "../utils";
+import { askQuestion, COLORS } from "../utils";
 import styles from "../styles/AuthenticatedActions.module.css";
 
 export type Statuses = "NONE" | "RUNNING" | "RAN";
@@ -22,6 +24,7 @@ interface AuthenticatedActionsState {
   intendedNextStatus: Statuses | undefined;
   inputValue: string;
   inputState: InputState;
+  localAnswer: string | undefined;
 }
 
 export class AuthenticatedActions extends React.Component<
@@ -35,6 +38,7 @@ export class AuthenticatedActions extends React.Component<
       intendedNextStatus: undefined,
       inputValue: "",
       inputState: "initial",
+      localAnswer: undefined,
     };
   }
 
@@ -53,6 +57,12 @@ export class AuthenticatedActions extends React.Component<
       this.setState({ awaitingClickResult: false });
     }
   };
+
+  public async componentDidMount() {
+    const { account, currentChain } = this.props;
+    const localAnswer = await getAnswerOrUndefined(account, currentChain);
+    this.setState({ localAnswer });
+  }
 
   public componentDidUpdate(
     prevProps: AuthenticatedActionsProps,
@@ -75,9 +85,14 @@ export class AuthenticatedActions extends React.Component<
   };
 
   public render() {
-    const { awaitingClickResult, intendedNextStatus, inputValue, inputState } =
-      this.state;
-    const { status, currentChain, answer } = this.props;
+    const {
+      awaitingClickResult,
+      intendedNextStatus,
+      inputValue,
+      inputState,
+      localAnswer,
+    } = this.state;
+    const { status, answer } = this.props;
 
     // Handles the case where we are currently running for a user,
     // and the case where a user has just initiated a request;
@@ -105,13 +120,20 @@ export class AuthenticatedActions extends React.Component<
       loading: disabledStatus,
     };
 
+    const latestAnswer = answer || localAnswer;
+    const previousAnswerInfoProps = {
+      answer: latestAnswer,
+    };
+
     return (
       <>
-        <h2>You are authenticated to the {currentChain.name} network!</h2>
         <MagicEightBall {...ballProps} />
-        <QuestionInput {...inputProps} />
-        <div className={styles["button-wrapper"]}>
-          <AskButton {...buttonProps} />
+        <div className={styles["input-and-button-wrapper"]}>
+          {latestAnswer && <PreviousAnswerInfo {...previousAnswerInfoProps} />}
+          <QuestionInput {...inputProps} />
+          <div className={styles["button-wrapper"]}>
+            <AskButton {...buttonProps} />
+          </div>
         </div>
       </>
     );
@@ -137,6 +159,33 @@ function handleError(error: unknown): void {
   const message = `Got error with type: [${typeof error}]`;
   console.error(message);
   console.error(error);
+}
+
+interface BannerStripProps {
+  answer?: string;
+}
+
+function PreviousAnswerInfo(props: BannerStripProps) {
+  const { answer } = props;
+  return (
+    <div className={styles["previous-answer-container"]}>
+      <BannerStrip
+        id={"banner-strip-last-answer"}
+        borderRadius={"16px"}
+        width={"400px"}
+        isCloseBtnVisible={false}
+        text={
+          <div className={styles["last-answer-container"]}>
+            <span>Your last answer was: </span>
+            <span className={styles["last-answer-text"]}>{answer}</span>
+          </div>
+        }
+        position={"relative"}
+        type="custom"
+        bgColor={COLORS.lavender}
+      />
+    </div>
+  );
 }
 
 function devDebuggerContent(

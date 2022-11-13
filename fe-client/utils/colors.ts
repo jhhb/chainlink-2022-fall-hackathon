@@ -5,4 +5,5 @@ export const COLORS = {
   black: "black",
   gray05: "#f3f3f3",
   biscay: "#1a2b6b",
+  lavender: "#dfe7fb",
 };
