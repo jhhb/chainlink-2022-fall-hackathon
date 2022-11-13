@@ -1,4 +1,5 @@
-import { COLORS } from "../utils";
+import * as React from "react";
+import { COLORS, SUPPORTED_CHAINS } from "../utils";
 import { AuthenticatedActionsProvider } from "../components/AuthenticatedActionsProvider";
 import { Footer } from "../components/Footer";
 import Head from "next/head";
@@ -12,6 +13,10 @@ export default function Home() {
   const { isWeb3Enabled, account, web3 } = useMoralis();
   const chainId: number | undefined = web3?.network?.chainId;
   const resolvedChain = findSupportedChain(chainId);
+
+  const connectionInfo = (resolvedChain && (
+    <SupportedChainMessage {...resolvedChain} />
+  )) || <UnsupportedChainMessage />;
 
   return (
     <div className={styles.container}>
@@ -32,6 +37,7 @@ export default function Home() {
       </header>
 
       <main className={styles.main}>
+        {connectionInfo}
         <InnerContent
           isWeb3Enabled={isWeb3Enabled}
           account={account}
@@ -57,9 +63,24 @@ function InnerContent(props: InnerContentProps) {
         <AuthenticatedActionsProvider account={account} currentChain={chain} />
       );
     } else {
-      return <div>Chain is not supported</div>;
+      console.debug("Unhandled case");
+      return null;
     }
   } else {
     return <UnauthenticatedActions />;
   }
+}
+
+function UnsupportedChainMessage() {
+  const names = SUPPORTED_CHAINS.map((c) => c.name);
+  return (
+    <div className={styles["unsupported-chain"]}>
+      <h2>Chain is not supported</h2>
+      <p>Supported chains include: {names.join(", ")}</p>
+    </div>
+  );
+}
+
+function SupportedChainMessage(resolvedChain: SupportedChain) {
+  return <h2>You are authenticated to the {resolvedChain.name} network!</h2>;
 }

@@ -107,11 +107,12 @@ export class AuthenticatedActions extends React.Component<
 
     return (
       <>
-        <h2>You are authenticated to the {currentChain.name} network!</h2>
         <MagicEightBall {...ballProps} />
-        <QuestionInput {...inputProps} />
-        <div className={styles["button-wrapper"]}>
-          <AskButton {...buttonProps} />
+        <div className={styles["input-and-button-wrapper"]}>
+          <QuestionInput {...inputProps} />
+          <div className={styles["button-wrapper"]}>
+            <AskButton {...buttonProps} />
+          </div>
         </div>
       </>
     );
