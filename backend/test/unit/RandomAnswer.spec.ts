@@ -164,27 +164,6 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
                   vrfCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorV2Mock");
               });
 
-              describe("failure", async () => {
-                  it("reverts if no address has been recorded for the input address", async () => {
-                      const [account1] = await ethers.getSigners();
-                      await expect(
-                          vrfConsumer.connect(account1).answer(account1.address)
-                      ).to.be.revertedWith(
-                          "The requested address must first call #askQuestion itself before an answer is computed."
-                      );
-                  });
-
-                  it("reverts if the parameterized address is currently asking", async () => {
-                      const [account1] = await ethers.getSigners();
-                      await vrfConsumer.connect(account1).askQuestion();
-                      await expect(
-                          vrfConsumer.connect(account1).answer(account1.address)
-                      ).to.be.revertedWith(
-                          "The requested address is currently asking. Please wait."
-                      );
-                  });
-              });
-
               describe("success", () => {
                   it("returns a value after randomness has been fulfilled for the requested address", async () => {
                       const [account1] = await ethers.getSigners();
@@ -204,6 +183,20 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
                           .connect(account2)
                           .answer(accountWithResult.address);
                       expect(result).to.eq("It is decidedly so.");
+                  });
+
+                  it("returns a special value if no address has been recorded for the input address", async () => {
+                      const [account1] = await ethers.getSigners();
+                      const result = await vrfConsumer.connect(account1).answer(account1.address);
+                      expect(result).to.eq("NO_ANSWER_NONE");
+                  });
+
+                  it("allows the parameterized address to ask even if an answer is not yet available", async () => {
+                      const [account1] = await ethers.getSigners();
+                      await vrfConsumer.connect(account1).askQuestion();
+
+                      const result = await vrfConsumer.connect(account1).answer(account1.address);
+                      expect(result).to.eq("NO_ANSWER_RUNNING");
                   });
               });
           });

@@ -97,6 +97,7 @@ contract RandomAnswer is VRFConsumerBaseV2 {
 
         requestIdToAddress[requestId] = asker;
         userAddressToStatus[asker] = ASK_STATUS_RUNNING;
+        //        userAddressToResult[asker] = 0;
         // TODO - zero out previous result ?
         emit QuestionAsked(requestId, asker);
     }
@@ -132,11 +133,16 @@ contract RandomAnswer is VRFConsumerBaseV2 {
      * @return answer as a string
      */
     function answer(address userAddress) public view returns (string memory) {
-        // TODO: JB - See if there is a way to simplify the state management.
-        require(userAddressToStatus[userAddress] != ASK_STATUS_RUNNING, "The requested address is currently asking. Please wait.");
-        require(userAddressToResult[userAddress] != 0, "The requested address must first call #askQuestion itself before an answer is computed.");
-
-        return getAnswer(userAddressToResult[userAddress]);
+        uint256 status = userAddressToStatus[userAddress];
+        if (status == ASK_STATUS_RAN) {
+            return getAnswer(userAddressToResult[userAddress]);
+        } else {
+            if (status == ASK_STATUS_RUNNING ) {
+                return 'NO_ANSWER_RUNNING';
+            } else {
+                return 'NO_ANSWER_NONE';
+            }
+        }
     }
 
     /**
