@@ -60,11 +60,15 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
                       vrfCoordinatorV2Mock.fulfillRandomWords(firstRequestId, vrfConsumer.address)
                   )
                       .to.emit(vrfConsumer, "QuestionAnswered")
-                      .withArgs(firstRequestId, transformedResult);
+                      .withArgs(firstRequestId, transformedResult, 2);
 
                   await expect(vrfConsumer.askQuestion())
                       .to.emit(vrfConsumer, "QuestionAsked")
                       .withArgs(2, account1.address);
+
+                  await expect(vrfCoordinatorV2Mock.fulfillRandomWords(2, vrfConsumer.address))
+                      .to.emit(vrfConsumer, "QuestionAnswered")
+                      .withArgs(2, 2, 3);
               });
 
               describe("security properties", async () => {
@@ -115,7 +119,8 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
                       .to.emit(vrfConsumer, "QuestionAnswered")
                       .withArgs(
                           secondRequestFulfillmentArgs.requestId,
-                          secondRequestFulfillmentArgs.value
+                          secondRequestFulfillmentArgs.value,
+                          2
                       );
 
                   const firstRequestFulfillmentArgs = { requestId: 1, value: 2 };
@@ -128,7 +133,8 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
                       .to.emit(vrfConsumer, "QuestionAnswered")
                       .withArgs(
                           firstRequestFulfillmentArgs.requestId,
-                          secondRequestFulfillmentArgs.value
+                          secondRequestFulfillmentArgs.value,
+                          2
                       );
               });
 
@@ -147,7 +153,7 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
                       vrfCoordinatorV2Mock.fulfillRandomWords(initialRequestId, vrfConsumer.address)
                   )
                       .to.emit(vrfConsumer, "QuestionAnswered")
-                      .withArgs(initialRequestId, expectedRandomValue);
+                      .withArgs(initialRequestId, expectedRandomValue, 2);
 
                   const secondRequestId = 2;
                   await expect(vrfConsumer.connect(account1).askQuestion())

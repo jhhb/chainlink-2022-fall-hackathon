@@ -24,7 +24,6 @@ import "hardhat/console.sol";
 
 contract RandomAnswer is VRFConsumerBaseV2 {
     VRFCoordinatorV2Interface private coordinator;
-    
     uint8 constant private ASK_STATUS_RUNNING = 1;
     uint8 constant private ASK_STATUS_RAN = 2;
 
@@ -58,9 +57,10 @@ contract RandomAnswer is VRFConsumerBaseV2 {
     mapping(uint256 => address) private requestIdToAddress;
     mapping(address => uint256) private userAddressToStatus;
     mapping(address => uint256) private userAddressToResult;
+    mapping(address => uint256) private userAddressToRequestIdentifier;
 
     event QuestionAsked(uint256 indexed requestId, address indexed asker);
-    event QuestionAnswered(uint256 indexed requestId, uint256 indexed asker);
+    event QuestionAnswered(uint256 indexed requestId, uint256 indexed asker, uint256 indexed count);
 
     /**
      * @notice Constructor inherits VRFConsumerBaseV2
@@ -85,7 +85,8 @@ contract RandomAnswer is VRFConsumerBaseV2 {
         address asker = msg.sender;
         // If question is currently in progress for user, do not allow.
         require(userAddressToStatus[asker] != ASK_STATUS_RUNNING, "You must wait for your current question to be answered.");
-        
+
+        // TODO: JB - Need to handle this possible exception here, and in the client.
         // Will revert if subscription is not set and funded.
         requestId = coordinator.requestRandomWords(
             keyHash,
@@ -97,8 +98,15 @@ contract RandomAnswer is VRFConsumerBaseV2 {
 
         requestIdToAddress[requestId] = asker;
         userAddressToStatus[asker] = ASK_STATUS_RUNNING;
-        //        userAddressToResult[asker] = 0;
         // TODO - zero out previous result ?
+        // userAddressToResult[asker] = 0;
+
+        // It does not matter what this initial value is -- it just needs to be monotonically increasing.
+        // The point of it is to give the frontend a way of uniquely ID-ing a change in the answer.
+        if (userAddressToRequestIdentifier[asker] == 0 ) {
+            userAddressToRequestIdentifier[asker] = 1;
+        }
+
         emit QuestionAsked(requestId, asker);
     }
 
@@ -123,8 +131,11 @@ contract RandomAnswer is VRFConsumerBaseV2 {
 
         userAddressToResult[userAddress] = d20Value;
         userAddressToStatus[userAddress] = ASK_STATUS_RAN;
-        
-        emit QuestionAnswered(requestId, d20Value);
+
+        uint256 newRequestCount = userAddressToRequestIdentifier[userAddress] + 1;
+        userAddressToRequestIdentifier[userAddress] = newRequestCount;
+
+        emit QuestionAnswered(requestId, d20Value, newRequestCount);
     }
 
     /**
@@ -138,9 +149,9 @@ contract RandomAnswer is VRFConsumerBaseV2 {
             return getAnswer(userAddressToResult[userAddress]);
         } else {
             if (status == ASK_STATUS_RUNNING ) {
-                return 'NO_ANSWER_RUNNING';
+                return "NO_ANSWER_RUNNING";
             } else {
-                return 'NO_ANSWER_NONE';
+                return "NO_ANSWER_NONE";
             }
         }
     }
