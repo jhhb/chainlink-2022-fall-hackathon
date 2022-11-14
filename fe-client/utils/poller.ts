@@ -1,8 +1,7 @@
-import { Statuses } from "../components/AuthenticatedActions";
 import { SupportedChain } from "./config";
-import { fetchStatus } from "./index";
+import { AnswerStruct, getAnswer } from "./datasource";
 
-export type PollerCallback = (value: Statuses) => void;
+export type PollerCallback = (value: AnswerStruct) => void;
 
 export class Poller {
   private readonly interval: number;
@@ -40,16 +39,12 @@ export class Poller {
   // needed to get it working for the new network.
   public start(callback: PollerCallback) {
     this.id = setInterval(async () => {
-      let latestValue;
       try {
-        latestValue = await fetchStatus(this.account, this.chain);
+        const latestValue = await getAnswer(this.account, this.chain);
+        callback(latestValue);
       } catch (err) {
         console.debug(err);
         this.cleanup();
-      }
-
-      if (latestValue) {
-        callback(latestValue);
       }
     }, this.interval);
   }

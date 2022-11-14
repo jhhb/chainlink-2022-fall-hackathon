@@ -1,11 +1,11 @@
-import { BannerStrip } from "@web3uikit/core";
 import * as React from "react";
+import { NO_ANSWER_RUNNING } from "../constants";
 import { SupportedChain } from "../utils/config";
-import { getAnswerOrUndefined } from "../utils/datasource";
+import { AnswerStruct } from "../utils/datasource";
 import { AskButton } from "./AskButton";
 import { MagicEightBall } from "./MagicEightBall";
 import { QuestionInput } from "./QuestionInput";
-import { askQuestion, COLORS } from "../utils";
+import { answerIsNonStubValue, answersDiffer, askQuestion } from "../utils";
 import styles from "../styles/AuthenticatedActions.module.css";
 
 export type Statuses = "NONE" | "RUNNING" | "RAN";
@@ -14,17 +14,15 @@ type InputState = "disabled" | "initial" | "error";
 
 interface AuthenticatedActionsProps {
   account: string;
-  status: Statuses;
   currentChain: SupportedChain;
-  answer?: string;
+  answer: AnswerStruct;
 }
 
 interface AuthenticatedActionsState {
   awaitingClickResult: boolean;
-  intendedNextStatus: Statuses | undefined;
+  awaitingNewAnswer: boolean;
   inputValue: string;
   inputState: InputState;
-  localAnswer: string | undefined;
 }
 
 export class AuthenticatedActions extends React.Component<
@@ -35,43 +33,32 @@ export class AuthenticatedActions extends React.Component<
     super(props);
     this.state = {
       awaitingClickResult: false,
-      intendedNextStatus: undefined,
+      awaitingNewAnswer: false,
       inputValue: "",
       inputState: "initial",
-      localAnswer: undefined,
     };
   }
 
   private handleClick = async () => {
-    const { status, currentChain } = this.props;
+    const { currentChain } = this.props;
     this.setState({
       awaitingClickResult: true,
-      intendedNextStatus: nextStatus(status),
+      awaitingNewAnswer: true,
     });
     try {
       await askQuestion(currentChain);
     } catch (error: unknown) {
       handleError(error);
-      this.setState({ intendedNextStatus: undefined });
+      this.setState({ awaitingNewAnswer: false });
     } finally {
       this.setState({ awaitingClickResult: false });
     }
   };
 
-  public async componentDidMount() {
-    const { account, currentChain } = this.props;
-    const localAnswer = await getAnswerOrUndefined(account, currentChain);
-    this.setState({ localAnswer });
-  }
-
-  public componentDidUpdate(
-    prevProps: AuthenticatedActionsProps,
-    prevState: AuthenticatedActionsState
-  ) {
-    // Once we get an up-to-date value on status from our contract, use that as our source of truth rather than the
-    // intendedNextStatus.
-    if (prevProps.status !== this.props.status) {
-      this.setState({ intendedNextStatus: undefined });
+  public componentDidUpdate(prevProps: AuthenticatedActionsProps) {
+    if (answersDiffer(prevProps.answer, this.props.answer)) {
+      // This cancels the loading state.
+      this.setState({ awaitingNewAnswer: false });
     }
   }
 
@@ -85,19 +72,16 @@ export class AuthenticatedActions extends React.Component<
   };
 
   public render() {
-    const {
-      awaitingClickResult,
-      intendedNextStatus,
-      inputValue,
-      inputState,
-      localAnswer,
-    } = this.state;
-    const { status, answer, currentChain } = this.props;
+    const { answer, currentChain } = this.props;
+    const { awaitingClickResult, inputValue, inputState, awaitingNewAnswer } =
+      this.state;
 
     // Handles the case where we are currently running for a user,
     // and the case where a user has just initiated a request;
     const disabledStatus =
-      awaitingClickResult || [intendedNextStatus, status].includes("RUNNING");
+      awaitingClickResult ||
+      awaitingNewAnswer ||
+      answer.answer === NO_ANSWER_RUNNING;
     const inputLengthIsInvalid = !inputLengthIsValid(inputValue);
 
     const buttonProps = {
@@ -105,8 +89,7 @@ export class AuthenticatedActions extends React.Component<
       disabled:
         disabledStatus || inputState === "error" || inputLengthIsInvalid,
       isLoading: awaitingClickResult,
-      status,
-      intendedNextStatus,
+      answer: answer.answer,
     };
 
     const inputProps = {
@@ -115,14 +98,12 @@ export class AuthenticatedActions extends React.Component<
       state: disabledStatus ? "disabled" : inputState,
     };
 
+    const answerForBall = answerIsNonStubValue(answer.answer)
+      ? answer
+      : undefined;
     const ballProps = {
-      answer,
+      answer: answerForBall?.answer,
       loading: disabledStatus,
-    };
-
-    const latestAnswer = answer || localAnswer;
-    const previousAnswerInfoProps = {
-      answer: latestAnswer,
     };
 
     return (
@@ -130,7 +111,6 @@ export class AuthenticatedActions extends React.Component<
         <h2>You are authenticated to the {currentChain.name} network!</h2>
         <MagicEightBall {...ballProps} />
         <div className={styles["input-and-button-wrapper"]}>
-          {latestAnswer && <PreviousAnswerInfo {...previousAnswerInfoProps} />}
           <QuestionInput {...inputProps} />
           <div className={styles["button-wrapper"]}>
             <AskButton {...buttonProps} />
@@ -141,67 +121,14 @@ export class AuthenticatedActions extends React.Component<
   }
 }
 
-function nextStatus(currentStatus: Statuses) {
-  switch (currentStatus) {
-    case "RUNNING":
-      return "RAN";
-    case "RAN":
-      return "RUNNING";
-    case "NONE":
-      return "RUNNING";
-  }
-}
-
 function inputLengthIsValid(value: string): boolean {
-  return value.length > 0 && value.length <= 60;
+  // eslint-disable-next-line no-magic-numbers
+  const [minValueLength, maxValueLength] = [1, 60];
+  return value.length >= minValueLength && value.length <= maxValueLength;
 }
 
 function handleError(error: unknown): void {
   const message = `Got error with type: [${typeof error}]`;
   console.error(message);
   console.error(error);
-}
-
-interface BannerStripProps {
-  answer?: string;
-}
-
-function PreviousAnswerInfo(props: BannerStripProps) {
-  const { answer } = props;
-  return (
-    <div className={styles["previous-answer-container"]}>
-      <BannerStrip
-        id={"banner-strip-last-answer"}
-        borderRadius={"16px"}
-        width={"400px"}
-        isCloseBtnVisible={false}
-        text={
-          <div className={styles["last-answer-container"]}>
-            <span>Your last answer was: </span>
-            <span className={styles["last-answer-text"]}>{answer}</span>
-          </div>
-        }
-        position={"relative"}
-        type="custom"
-        bgColor={COLORS.lavender}
-      />
-    </div>
-  );
-}
-
-function devDebuggerContent(
-  status: Statuses,
-  intendedNextStatus: Statuses | undefined
-) {
-  const shouldRender = false;
-  if (shouldRender) {
-    return (
-      <>
-        <h2>Polled Status: {status}</h2>
-        <h2>Intended Next status: {intendedNextStatus}</h2>
-      </>
-    );
-  } else {
-    return undefined;
-  }
 }

@@ -1,3 +1,4 @@
+import BigNumber from "bignumber.js";
 import Moralis from "moralis-v1";
 import { Statuses } from "../components/AuthenticatedActions";
 import {
@@ -37,21 +38,21 @@ export async function askQuestion(
 export async function getAnswer(
   userAddress: string,
   chain: SupportedChain
-): Promise<string> {
+): Promise<AnswerStruct> {
   const result = await Moralis.executeFunction({
     abi: CONTRACT_ABI,
     contractAddress: chain.deployedContractAddress,
     functionName: GET_ANSWER_FUNCTION_NAME,
     params: { userAddress },
   });
-  assertIsString(result);
+  assertIsStruct(result);
   return result;
 }
 
 export async function getAnswerOrUndefined(
   userAddress: string,
   chain: SupportedChain
-): Promise<string | undefined> {
+): Promise<AnswerStruct | undefined> {
   try {
     return await getAnswer(userAddress, chain);
   } catch (_err) {
@@ -76,5 +77,23 @@ function assertIsStatuses(value: unknown): asserts value is Statuses {
     throw new Error(
       `Expected value [${value}] to be a Statuses; got: [${value}]`
     );
+  }
+}
+
+export interface AnswerStruct {
+  id: BigNumber;
+  answer: string;
+}
+
+function assertIsStruct(value: unknown): asserts value is AnswerStruct {
+  const castValue = value as { answer: string; id: { _isBigNumber: true } };
+  const idIsBigNumber = castValue.id._isBigNumber;
+  const error = new Error(`Expected value [${value}] to be an AnswerStruct`);
+  if (!idIsBigNumber) {
+    throw error;
+  }
+
+  if (!castValue.answer.length) {
+    throw error;
   }
 }

@@ -1,10 +1,9 @@
 import { Loading } from "@web3uikit/core";
 import * as React from "react";
 import { SupportedChain } from "../utils/config";
-import { getAnswer } from "../utils/datasource";
-import { AuthenticatedActions, Statuses } from "./AuthenticatedActions";
-import { Poller, fetchStatus } from "../utils";
-import { flushSync } from "react-dom";
+import { AnswerStruct, getAnswer } from "../utils/datasource";
+import { AuthenticatedActions } from "./AuthenticatedActions";
+import { answersDiffer, Poller } from "../utils";
 
 interface Props {
   account: string;
@@ -12,8 +11,7 @@ interface Props {
 }
 
 interface State {
-  status: Statuses | undefined;
-  answer: string | undefined;
+  answerStruct: AnswerStruct | undefined;
 }
 
 export class AuthenticatedActionsProvider extends React.Component<
@@ -25,7 +23,7 @@ export class AuthenticatedActionsProvider extends React.Component<
 
   public constructor(props: Props) {
     super(props);
-    this.state = { status: undefined, answer: undefined };
+    this.state = { answerStruct: undefined };
   }
 
   public componentWillUnmount() {
@@ -34,17 +32,13 @@ export class AuthenticatedActionsProvider extends React.Component<
 
   public async componentDidMount() {
     const { account, currentChain } = this.props;
-    const initialStatus = await fetchStatus(account, currentChain);
-    this.setState({ status: initialStatus });
+    const answerStruct = await getAnswer(account, currentChain);
+    this.setState({ answerStruct });
 
     this.poller = this.buildAndStartPoller();
   }
 
-  public componentDidUpdate(
-    prevProps: Props,
-    prevState: State,
-    snapshot?: unknown
-  ) {
+  public componentDidUpdate(prevProps: Props) {
     const { currentChain } = this.props;
     const connectedNetworkHasChanged =
       currentChain.chainId !== prevProps.currentChain.chainId;
@@ -55,24 +49,16 @@ export class AuthenticatedActionsProvider extends React.Component<
     }
   }
 
-  private pollerCallback = async (newStatus: Statuses) => {
-    const { status: previousStatus } = this.state;
-    const { account: address, currentChain } = this.props;
-    const statusHasChanged = newStatus !== previousStatus;
-    if (statusHasChanged) {
-      flushSync(() => {
-        this.setState({ status: newStatus });
-      });
+  private pollerCallback = async (newAnswer: AnswerStruct) => {
+    const { answerStruct: previousAnswer } = this.state;
 
-      if (newStatus === "RAN") {
-        const answer = await getAnswer(address, currentChain);
-
-        flushSync(() => {
-          this.setState({ answer });
-        });
-      }
+    // TODO: JB - This is done to appease TS but we can probably simplify.
+    if (!previousAnswer) {
+      this.setState({ answerStruct: newAnswer });
     } else {
-      // Do nothing.
+      if (answersDiffer(previousAnswer, newAnswer)) {
+        this.setState({ answerStruct: newAnswer });
+      }
     }
   };
 
@@ -87,13 +73,12 @@ export class AuthenticatedActionsProvider extends React.Component<
   }
 
   public render() {
-    if (this.state.status) {
+    if (this.state.answerStruct) {
       return (
         <AuthenticatedActions
           account={this.props.account}
-          status={this.state.status}
           currentChain={this.props.currentChain}
-          answer={this.state.answer}
+          answer={this.state.answerStruct}
         />
       );
     } else {

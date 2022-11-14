@@ -1,7 +1,10 @@
 {
-  "extends": "next/core-web-vitals",
+  "extends": ["next/core-web-vitals", "eslint:recommended"],
   "rules": {
     "semi": "error",
-    "no-console": "warn"
+    "no-console": "warn",
+    "no-unused-vars": "warn",
+    "eqeqeq": "error",
+    "no-magic-numbers": "warn"
   }
 }

@@ -51,6 +51,12 @@ const CONTRACT_ABI = [
         name: "asker",
         type: "uint256",
       },
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "count",
+        type: "uint256",
+      },
     ],
     name: "QuestionAnswered",
     type: "event",
@@ -85,9 +91,21 @@ const CONTRACT_ABI = [
     name: "answer",
     outputs: [
       {
-        internalType: "string",
+        components: [
+          {
+            internalType: "string",
+            name: "answer",
+            type: "string",
+          },
+          {
+            internalType: "uint256",
+            name: "id",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct RandomAnswer.Answer",
         name: "",
-        type: "string",
+        type: "tuple",
       },
     ],
     stateMutability: "view",
@@ -155,10 +173,15 @@ const STATUS_RAN = "RAN";
 type StatusTuple = ["RAN", "NONE", "RUNNING"];
 const ALL_STATUSES: StatusTuple = [STATUS_RAN, STATUS_NONE, STATUS_RUNNING];
 
+const NO_ANSWER_NONE = "NO_ANSWER_NONE";
+const NO_ANSWER_RUNNING = "NO_ANSWER_RUNNING";
+
 export {
   CONTRACT_ABI,
   START_FUNCTION_NAME,
   GET_STATUS_FUNCTION_NAME,
   GET_ANSWER_FUNCTION_NAME,
   ALL_STATUSES,
+  NO_ANSWER_NONE,
+  NO_ANSWER_RUNNING,
 };

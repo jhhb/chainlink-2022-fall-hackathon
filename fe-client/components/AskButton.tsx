@@ -1,17 +1,16 @@
 import { Button } from "@web3uikit/core";
+import { NO_ANSWER_NONE, NO_ANSWER_RUNNING } from "../constants";
 import { COLORS } from "../utils";
-import { Statuses } from "./AuthenticatedActions";
 
 interface Props {
   onClick: () => void;
-  status: Statuses;
-  intendedNextStatus: Statuses | undefined;
   disabled: boolean;
   isLoading: boolean;
+  answer: string;
 }
 
 export function AskButton(props: Props) {
-  const { disabled, isLoading } = props;
+  const { disabled, isLoading, answer } = props;
 
   const staticProps = {
     theme: "custom" as const,
@@ -20,7 +19,7 @@ export function AskButton(props: Props) {
       backgroundColor: COLORS.primary,
       textColor: COLORS.white,
     },
-    text: buttonText(props.status, props.intendedNextStatus),
+    text: buttonText(answer),
   };
 
   return (
@@ -33,17 +32,13 @@ export function AskButton(props: Props) {
   );
 }
 
-function buttonText(
-  currentStatus: Statuses,
-  intendedNextStatus: Statuses | undefined
-): string {
-  const statusToConsult = intendedNextStatus || currentStatus;
-  switch (statusToConsult) {
-    case "RUNNING":
+function buttonText(answer: string): string {
+  switch (answer) {
+    case NO_ANSWER_RUNNING:
       return "Awaiting an answer";
-    case "RAN":
+    case NO_ANSWER_NONE:
       return "Ask";
-    case "NONE":
+    default:
       return "Ask";
   }
 }
