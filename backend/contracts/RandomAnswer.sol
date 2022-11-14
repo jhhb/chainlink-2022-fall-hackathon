@@ -59,6 +59,11 @@ contract RandomAnswer is VRFConsumerBaseV2 {
     mapping(address => uint256) private userAddressToResult;
     mapping(address => uint256) private userAddressToRequestIdentifier;
 
+    struct Answer {
+        string answer;
+        uint id;
+    }
+
     event QuestionAsked(uint256 indexed requestId, address indexed asker);
     event QuestionAnswered(uint256 indexed requestId, uint256 indexed asker, uint256 indexed count);
 
@@ -143,15 +148,18 @@ contract RandomAnswer is VRFConsumerBaseV2 {
      * @param userAddress address
      * @return answer as a string
      */
-    function answer(address userAddress) public view returns (string memory) {
+    function answer(address userAddress) public view returns (Answer memory) {
         uint256 status = userAddressToStatus[userAddress];
+        uint256 id = userAddressToRequestIdentifier[userAddress];
+
         if (status == ASK_STATUS_RAN) {
-            return getAnswer(userAddressToResult[userAddress]);
+            string memory answer = getAnswer(userAddressToResult[userAddress]);
+            return Answer(answer, id);
         } else {
             if (status == ASK_STATUS_RUNNING ) {
-                return "NO_ANSWER_RUNNING";
+                return Answer("NO_ANSWER_RUNNING", id);
             } else {
-                return "NO_ANSWER_NONE";
+                return Answer("NO_ANSWER_NONE", id);
             }
         }
     }
