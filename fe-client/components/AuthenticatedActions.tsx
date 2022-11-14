@@ -92,7 +92,7 @@ export class AuthenticatedActions extends React.Component<
       inputState,
       localAnswer,
     } = this.state;
-    const { status, answer } = this.props;
+    const { status, answer, currentChain } = this.props;
 
     // Handles the case where we are currently running for a user,
     // and the case where a user has just initiated a request;
@@ -127,6 +127,7 @@ export class AuthenticatedActions extends React.Component<
 
     return (
       <>
+        <h2>You are authenticated to the {currentChain.name} network!</h2>
         <MagicEightBall {...ballProps} />
         <div className={styles["input-and-button-wrapper"]}>
           {latestAnswer && <PreviousAnswerInfo {...previousAnswerInfoProps} />}

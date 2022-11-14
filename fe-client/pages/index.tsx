@@ -14,9 +14,25 @@ export default function Home() {
   const chainId: number | undefined = web3?.network?.chainId;
   const resolvedChain = findSupportedChain(chainId);
 
-  const connectionInfo = (resolvedChain && (
-    <SupportedChainMessage {...resolvedChain} />
-  )) || <UnsupportedChainMessage />;
+  const mainContent =
+    isWeb3Enabled && account ? (
+      resolvedChain ? (
+        <main className={styles.main}>
+          <AuthenticatedActionsProvider
+            account={account}
+            currentChain={resolvedChain}
+          />
+        </main>
+      ) : (
+        <main className={styles.main}>
+          <UnsupportedChainMessage />
+        </main>
+      )
+    ) : (
+      <main className={styles.connect}>
+        <UnauthenticatedActions />
+      </main>
+    );
 
   return (
     <div className={styles.container}>
@@ -35,40 +51,10 @@ export default function Home() {
           backgroundColor={COLORS.biscay}
         />
       </header>
-
-      <main className={styles.main}>
-        {connectionInfo}
-        <InnerContent
-          isWeb3Enabled={isWeb3Enabled}
-          account={account}
-          chain={resolvedChain}
-        />
-      </main>
+      {mainContent}
       <Footer />
     </div>
   );
-}
-
-interface InnerContentProps {
-  isWeb3Enabled: boolean;
-  account: string | null;
-  chain: SupportedChain | undefined;
-}
-
-function InnerContent(props: InnerContentProps) {
-  const { isWeb3Enabled, account, chain } = props;
-  if (isWeb3Enabled && account) {
-    if (chain) {
-      return (
-        <AuthenticatedActionsProvider account={account} currentChain={chain} />
-      );
-    } else {
-      console.debug("Unhandled case");
-      return null;
-    }
-  } else {
-    return <UnauthenticatedActions />;
-  }
 }
 
 function UnsupportedChainMessage() {
@@ -79,8 +65,4 @@ function UnsupportedChainMessage() {
       <p>Supported chains include: {names.join(", ")}</p>
     </div>
   );
-}
-
-function SupportedChainMessage(resolvedChain: SupportedChain) {
-  return <h2>You are authenticated to the {resolvedChain.name} network!</h2>;
 }

@@ -107,3 +107,13 @@
     flex-direction: column;
   }
 }
+
+/* Essentially the same as main, but we center*/
+.connect {
+  height: 82vh;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
