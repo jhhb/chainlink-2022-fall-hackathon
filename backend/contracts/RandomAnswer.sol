@@ -25,6 +25,7 @@ import "hardhat/console.sol";
 struct Answer {
     string value;
     uint id;
+    string question;
 }
 
 struct Request {
@@ -166,18 +167,18 @@ contract RandomAnswer is VRFConsumerBaseV2 {
      */
     function answer(address userAddress) public view returns (Answer memory) {
         if (userAddressToRequestIndices[userAddress].length == 0) {
-                return makeAnswer(0, "NO_ANSWER_NONE");
+                return makeAnswer(0, "NO_ANSWER_NONE", '');
         } else {
             uint256 latestId = latestRequestId(userAddress);
             Request memory latestRequest = allRequests[latestId];
-            return makeAnswer(latestRequest.id, latestRequest.answerValue);
+            return makeAnswer(latestRequest.id, latestRequest.answerValue, latestRequest.question);
         }
     }
 
     function answers(address userAddress) public view returns (Answer[] memory) {
         if (userAddressToRequestIndices[userAddress].length == 0) {
             Answer[] memory _answers = new Answer[](1);
-            _answers[0] = makeAnswer(0, "NO_ANSWER_NONE");
+            _answers[0] = makeAnswer(0, "NO_ANSWER_NONE", '');
             return _answers;
         } else {
             return requestsToAnswers(userAddress);
@@ -242,12 +243,12 @@ contract RandomAnswer is VRFConsumerBaseV2 {
         for (uint i = 0; i < requestIndices.length; i++) {
             uint requestIndex = requestIndices[i];
             Request memory _request = allRequests[requestIndex];
-            _answers[i] = makeAnswer(_request.id, _request.answerValue);
+            _answers[i] = makeAnswer(_request.id, _request.answerValue, _request.question);
         }
         return _answers;
     }
 
-    function makeAnswer(uint256 id, string memory value) private pure returns (Answer memory) {
-        return Answer({id: id, value: value});
+    function makeAnswer(uint256 id, string memory value, string memory question) private pure returns (Answer memory) {
+        return Answer({id: id, value: value, question: question});
     }
 }
