@@ -27,6 +27,11 @@ contract RandomAnswer is VRFConsumerBaseV2 {
     uint8 constant private ASK_STATUS_RUNNING = 1;
     uint8 constant private ASK_STATUS_RAN = 2;
 
+    struct Answer {
+        string answer;
+        uint id;
+    }
+
     uint64 private subscriptionId;
     bytes32 private keyHash;
 
@@ -59,13 +64,8 @@ contract RandomAnswer is VRFConsumerBaseV2 {
     mapping(address => uint256) private userAddressToResult;
     mapping(address => uint256) private userAddressToRequestIdentifier;
 
-    struct Answer {
-        string answer;
-        uint id;
-    }
-
     event QuestionAsked(uint256 indexed requestId, address indexed asker);
-    event QuestionAnswered(uint256 indexed requestId, uint256 indexed asker, uint256 indexed count);
+    event QuestionAnswered(uint256 indexed requestId, uint256 indexed asker);
 
     /**
      * @notice Constructor inherits VRFConsumerBaseV2
@@ -103,14 +103,8 @@ contract RandomAnswer is VRFConsumerBaseV2 {
 
         requestIdToAddress[requestId] = asker;
         userAddressToStatus[asker] = ASK_STATUS_RUNNING;
-        // TODO - zero out previous result ?
-        // userAddressToResult[asker] = 0;
 
-        // It does not matter what this initial value is -- it just needs to be monotonically increasing.
-        // The point of it is to give the frontend a way of uniquely ID-ing a change in the answer.
-        if (userAddressToRequestIdentifier[asker] == 0 ) {
-            userAddressToRequestIdentifier[asker] = 1;
-        }
+        userAddressToRequestIdentifier[asker] += 1;
 
         emit QuestionAsked(requestId, asker);
     }
@@ -137,10 +131,7 @@ contract RandomAnswer is VRFConsumerBaseV2 {
         userAddressToResult[userAddress] = d20Value;
         userAddressToStatus[userAddress] = ASK_STATUS_RAN;
 
-        uint256 newRequestCount = userAddressToRequestIdentifier[userAddress] + 1;
-        userAddressToRequestIdentifier[userAddress] = newRequestCount;
-
-        emit QuestionAnswered(requestId, d20Value, newRequestCount);
+        emit QuestionAnswered(requestId, d20Value);
     }
 
     /**
@@ -153,8 +144,8 @@ contract RandomAnswer is VRFConsumerBaseV2 {
         uint256 id = userAddressToRequestIdentifier[userAddress];
 
         if (status == ASK_STATUS_RAN) {
-            string memory answer = getAnswer(userAddressToResult[userAddress]);
-            return Answer(answer, id);
+            string memory _answer = getAnswer(userAddressToResult[userAddress]);
+            return Answer(_answer, id);
         } else {
             if (status == ASK_STATUS_RUNNING ) {
                 return Answer("NO_ANSWER_RUNNING", id);
