@@ -76,7 +76,6 @@ export class AuthenticatedActionsProvider extends React.Component<
     if (this.state.answerStruct) {
       return (
         <AuthenticatedActions
-          address={this.props.address}
           currentChain={this.props.currentChain}
           answer={this.state.answerStruct}
         />
