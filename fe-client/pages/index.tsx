@@ -47,7 +47,8 @@ export default function Home() {
           align="right"
           rounded="0px"
           textColor={COLORS.white}
-          title="The World's First Verifiably Random Magic 8 Ball"
+          title="vrf8ball.link"
+          subTitle="The World's First Verifiably Random Magic 8 Ball"
           backgroundColor={COLORS.biscay}
         />
       </header>
