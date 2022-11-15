@@ -250,6 +250,54 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
               });
           });
 
+          describe("#answers", async () => {
+              beforeEach(async () => {
+                  await deployments.fixture(["mocks", "randomAnswer"]);
+                  vrfConsumer = await ethers.getContract("RandomAnswer");
+
+                  vrfCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorV2Mock");
+              });
+
+              it("Returns the expected value when there is no answer for the user", async () => {
+                  const [account1] = await ethers.getSigners();
+
+                  const answers = await vrfConsumer.connect(account1).answers(account1.address);
+                  expect(answers.length).to.eq(1);
+                  expect(answers[0].value).to.eq("NO_ANSWER_NONE");
+                  expect(answers[0].id).to.eq(0);
+              });
+
+              it("Returns the expected result throughout the lifecycle", async () => {
+                  const [account1] = await ethers.getSigners();
+
+                  await vrfConsumer.connect(account1).askQuestion();
+
+                  let answers = await vrfConsumer.connect(account1).answers(account1.address);
+                  expect(answers.length).to.eq(1);
+                  expect(answers[0].id).to.eq(1);
+                  expect(answers[0].value).to.eq("NO_ANSWER_RUNNING");
+
+                  await vrfCoordinatorV2Mock.fulfillRandomWords(1, vrfConsumer.address);
+
+                  answers = await vrfConsumer.connect(account1).answers(account1.address);
+                  expect(answers.length).to.eq(1);
+
+                  const { value, id } = answers[0];
+                  expect(value).to.be.eq("It is decidedly so.");
+                  expect(id).to.be.eq(1);
+
+                  await vrfConsumer.connect(account1).askQuestion();
+                  answers = await vrfConsumer.connect(account1).answers(account1.address);
+                  expect(answers.length).to.eq(2);
+                  const [first, second] = answers;
+                  expect(first.id).to.eq(1);
+                  expect(first.value).to.eq("It is decidedly so.");
+
+                  expect(second.id).to.eq(2);
+                  expect(second.value).to.eq("NO_ANSWER_RUNNING");
+              });
+          });
+
           // TODO: JB - Need to see more examples to make sure this is working.
           describe("Deployment", async () => {
               it("emits the expected event", async () => {});
