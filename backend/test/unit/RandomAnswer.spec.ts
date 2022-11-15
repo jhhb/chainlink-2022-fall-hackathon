@@ -8,6 +8,7 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
     : describe("RandomAnswer Unit Tests", async function () {
           let vrfConsumer: RandomAnswer;
           let vrfCoordinatorV2Mock: VRFCoordinatorV2Mock;
+          let askQuestionInput = "ask-question-input";
 
           describe("#askQuestion", async () => {
               beforeEach(async () => {
@@ -20,7 +21,7 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
               it("Should successfully request a random number", async () => {
                   const [account1] = await ethers.getSigners();
 
-                  await expect(vrfConsumer.askQuestion())
+                  await expect(vrfConsumer.askQuestion(askQuestionInput))
                       .to.emit(vrfConsumer, "QuestionAsked")
                       .withArgs(1, account1.address);
               });
@@ -28,11 +29,11 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
               it("Disallows multiple in-flight requests for the same address", async () => {
                   const [account1] = await ethers.getSigners();
 
-                  await expect(vrfConsumer.askQuestion())
+                  await expect(vrfConsumer.askQuestion(askQuestionInput))
                       .to.emit(vrfConsumer, "QuestionAsked")
                       .withArgs(1, account1.address);
 
-                  await expect(vrfConsumer.askQuestion()).to.be.revertedWith(
+                  await expect(vrfConsumer.askQuestion(askQuestionInput)).to.be.revertedWith(
                       "You must wait for your current question to be answered."
                   );
               });
@@ -40,18 +41,18 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
               it("Allows two different users to make multiple requests, with no fulfillment, without error", async () => {
                   const [account1, account2] = await ethers.getSigners();
 
-                  await expect(vrfConsumer.connect(account1).askQuestion())
+                  await expect(vrfConsumer.connect(account1).askQuestion(askQuestionInput))
                       .to.emit(vrfConsumer, "QuestionAsked")
                       .withArgs(1, account1.address);
 
-                  await expect(vrfConsumer.connect(account2).askQuestion())
+                  await expect(vrfConsumer.connect(account2).askQuestion(askQuestionInput))
                       .to.emit(vrfConsumer, "QuestionAsked")
                       .withArgs(2, account2.address);
               });
 
               it("Allows additional requests by the same address after the prior one has completed", async () => {
                   const [account1] = await ethers.getSigners();
-                  await vrfConsumer.askQuestion();
+                  await vrfConsumer.askQuestion(askQuestionInput);
 
                   const firstRequestId = 1;
                   const transformedResult = 2;
@@ -62,7 +63,7 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
                       .to.emit(vrfConsumer, "QuestionAnswered")
                       .withArgs(firstRequestId, transformedResult);
 
-                  await expect(vrfConsumer.askQuestion())
+                  await expect(vrfConsumer.askQuestion(askQuestionInput))
                       .to.emit(vrfConsumer, "QuestionAsked")
                       .withArgs(2, account1.address);
 
@@ -71,25 +72,37 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
                       .withArgs(2, 2);
               });
 
+              describe("question input validation", async () => {
+                  it("Reverts for invalid inputs", async () => {
+                      await expect(vrfConsumer.askQuestion("")).to.be.revertedWith(
+                          "You must input a question between 1 and 60 characters."
+                      );
+
+                      const longArray = new Array(61);
+                      const longString = longArray.map((el) => "c").join("");
+                      await expect(vrfConsumer.askQuestion(longString)).to.be.revertedWith(
+                          "You must input a question between 1 and 60 characters."
+                      );
+                  });
+              });
+
               describe("security properties", async () => {
                   it("Allows the signer to call the function", async () => {
                       const [account1] = await ethers.getSigners();
 
                       expect(await vrfConsumer.signer.getAddress()).to.eq(account1.address);
-                      await expect(vrfConsumer.connect(account1).askQuestion()).to.emit(
-                          vrfConsumer,
-                          "QuestionAsked"
-                      );
+                      await expect(
+                          vrfConsumer.connect(account1).askQuestion(askQuestionInput)
+                      ).to.emit(vrfConsumer, "QuestionAsked");
                   });
 
                   it("Allows other addresses to call the function", async () => {
                       const [_account1, account2] = await ethers.getSigners();
 
                       expect(await vrfConsumer.signer.getAddress()).to.not.eq(account2.address);
-                      await expect(vrfConsumer.connect(account2).askQuestion()).to.emit(
-                          vrfConsumer,
-                          "QuestionAsked"
-                      );
+                      await expect(
+                          vrfConsumer.connect(account2).askQuestion(askQuestionInput)
+                      ).to.emit(vrfConsumer, "QuestionAsked");
                   });
               });
           });
@@ -105,9 +118,9 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
               it("emits the expected events even when fulfillments occur out of order", async () => {
                   const [account1, account2] = await ethers.getSigners();
 
-                  await vrfConsumer.connect(account1).askQuestion();
+                  await vrfConsumer.connect(account1).askQuestion(askQuestionInput);
 
-                  await vrfConsumer.connect(account2).askQuestion();
+                  await vrfConsumer.connect(account2).askQuestion(askQuestionInput);
 
                   const secondRequestFulfillmentArgs = { requestId: 2, value: 2 };
                   await expect(
@@ -139,11 +152,11 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
               it("allows the user to ask again on fulfillment", async () => {
                   const [account1] = await ethers.getSigners();
 
-                  await vrfConsumer.connect(account1).askQuestion();
+                  await vrfConsumer.connect(account1).askQuestion(askQuestionInput);
 
-                  await expect(vrfConsumer.connect(account1).askQuestion()).to.be.revertedWith(
-                      "You must wait for your current question to be answered."
-                  );
+                  await expect(
+                      vrfConsumer.connect(account1).askQuestion(askQuestionInput)
+                  ).to.be.revertedWith("You must wait for your current question to be answered.");
 
                   const initialRequestId = 1;
                   const expectedRandomValue = 2;
@@ -154,7 +167,7 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
                       .withArgs(initialRequestId, expectedRandomValue);
 
                   const secondRequestId = 2;
-                  await expect(vrfConsumer.connect(account1).askQuestion())
+                  await expect(vrfConsumer.connect(account1).askQuestion(askQuestionInput))
                       .to.emit(vrfConsumer, "QuestionAsked")
                       .withArgs(secondRequestId, account1.address);
               });
@@ -171,7 +184,7 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
               describe("success", () => {
                   it("returns a value after randomness has been fulfilled for the requested address", async () => {
                       const [account1] = await ethers.getSigners();
-                      await vrfConsumer.connect(account1).askQuestion();
+                      await vrfConsumer.connect(account1).askQuestion(askQuestionInput);
                       await vrfCoordinatorV2Mock.fulfillRandomWords(1, vrfConsumer.address);
 
                       const result = await vrfConsumer.connect(account1).answer(account1.address);
@@ -182,7 +195,7 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
 
                   it("allows the sender to run the function for other addresses", async () => {
                       const [accountWithResult, account2] = await ethers.getSigners();
-                      await vrfConsumer.connect(accountWithResult).askQuestion();
+                      await vrfConsumer.connect(accountWithResult).askQuestion(askQuestionInput);
                       await vrfCoordinatorV2Mock.fulfillRandomWords(1, vrfConsumer.address);
 
                       const result = await vrfConsumer
@@ -201,7 +214,7 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
 
                   it("allows the parameterized address to ask even if an answer is not yet available", async () => {
                       const [account1] = await ethers.getSigners();
-                      await vrfConsumer.connect(account1).askQuestion();
+                      await vrfConsumer.connect(account1).askQuestion(askQuestionInput);
 
                       const result = await vrfConsumer.connect(account1).answer(account1.address);
                       expect(result.value).to.eq("NO_ANSWER_RUNNING");
@@ -227,7 +240,7 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
                           .getUserStatus(account2.address);
                       expect(result).to.be.eq("NONE");
 
-                      await vrfConsumer.connect(account2).askQuestion();
+                      await vrfConsumer.connect(account2).askQuestion(askQuestionInput);
 
                       const resultAfterAsking = await vrfConsumer
                           .connect(account2)
@@ -241,7 +254,7 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
                           .getUserStatus(account2.address);
                       expect(resultAfterFulfill).to.be.eq("RAN");
 
-                      await vrfConsumer.connect(account2).askQuestion();
+                      await vrfConsumer.connect(account2).askQuestion(askQuestionInput);
                       const resultAfterAskingAgain = await vrfConsumer
                           .connect(account2)
                           .getUserStatus(account2.address);
@@ -270,7 +283,7 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
               it("Returns the expected result throughout the lifecycle", async () => {
                   const [account1] = await ethers.getSigners();
 
-                  await vrfConsumer.connect(account1).askQuestion();
+                  await vrfConsumer.connect(account1).askQuestion(askQuestionInput);
 
                   let answers = await vrfConsumer.connect(account1).answers(account1.address);
                   expect(answers.length).to.eq(1);
@@ -286,7 +299,7 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
                   expect(value).to.be.eq("It is decidedly so.");
                   expect(id).to.be.eq(1);
 
-                  await vrfConsumer.connect(account1).askQuestion();
+                  await vrfConsumer.connect(account1).askQuestion(askQuestionInput);
                   answers = await vrfConsumer.connect(account1).answers(account1.address);
                   expect(answers.length).to.eq(2);
                   const [first, second] = answers;

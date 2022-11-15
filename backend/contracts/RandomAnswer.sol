@@ -22,19 +22,18 @@ import "hardhat/console.sol";
  * DO NOT USE THIS CODE IN PRODUCTION.
  */
 
-    struct Answer {
-        string value;
-        uint id;
-    }
+struct Answer {
+    string value;
+    uint id;
+}
 
-    struct Request {
-        uint id;
-        uint status; // ASK_STATUS_RUNNING, ASK_STATUS_RAN, or 0 by default.
-        address user;
-        string question;
-        bool exists;
-        string answerValue;
-    }
+struct Request {
+    uint id;
+    uint status; // ASK_STATUS_RUNNING, ASK_STATUS_RAN, or 0 by default.
+    address user;
+    string question;
+    string answerValue;
+}
 
 contract RandomAnswer is VRFConsumerBaseV2 {
     VRFCoordinatorV2Interface private coordinator;
@@ -58,7 +57,7 @@ contract RandomAnswer is VRFConsumerBaseV2 {
     // this limit based on the network that you select, the size of the request,
     // and the processing of the callback request in the fulfillRandomWords()
     // function.
-    uint32 private callbackGasLimit = 40000 * 2 * 10;
+    uint32 private callbackGasLimit = 40000 * 2;
 
     // The default is 3, but you can set this higher.
     uint16 private requestConfirmations = 3;
@@ -98,10 +97,12 @@ contract RandomAnswer is VRFConsumerBaseV2 {
      * as that would give miners/VRF operators latitude about which VRF response arrives first.
      * @dev You must review your implementation details with extreme care.
      */
-    function askQuestion() public returns (uint256 requestId) {
+    function askQuestion(string memory question) public returns (uint256 requestId) {
         address asker = msg.sender;
         // If question is currently in progress for user, do not allow.
         require(userAddressToStatus[asker] != ASK_STATUS_RUNNING, "You must wait for your current question to be answered.");
+        uint questionLength = bytes(question).length;
+        require(questionLength > 0 && questionLength <= 60, "You must input a question between 1 and 60 characters.");
 
         // TODO: JB - Need to handle this possible exception here, and in the client.
         // Will revert if subscription is not set and funded.
@@ -121,7 +122,7 @@ contract RandomAnswer is VRFConsumerBaseV2 {
         uint initialIdValue = userAddressToRequestIdentifier[asker];
         userAddressToRequestIdentifier[asker] = initialIdValue + 1;
 
-        allRequests.push(Request({id: userAddressToRequestIdentifier[asker], status: ASK_STATUS_RUNNING, user: asker, question: "question", exists: true, answerValue: "NO_ANSWER_RUNNING"}));
+        allRequests.push(Request({id: userAddressToRequestIdentifier[asker], status: ASK_STATUS_RUNNING, user: asker, question: question, answerValue: "NO_ANSWER_RUNNING"}));
         userAddressToRequestIndices[asker].push(allRequests.length - 1);
 
         emit QuestionAsked(requestId, asker);
