@@ -60,7 +60,7 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
                       vrfCoordinatorV2Mock.fulfillRandomWords(firstRequestId, vrfConsumer.address)
                   )
                       .to.emit(vrfConsumer, "QuestionAnswered")
-                      .withArgs(firstRequestId, transformedResult, 2);
+                      .withArgs(firstRequestId, transformedResult);
 
                   await expect(vrfConsumer.askQuestion())
                       .to.emit(vrfConsumer, "QuestionAsked")
@@ -68,7 +68,7 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
 
                   await expect(vrfCoordinatorV2Mock.fulfillRandomWords(2, vrfConsumer.address))
                       .to.emit(vrfConsumer, "QuestionAnswered")
-                      .withArgs(2, 2, 3);
+                      .withArgs(2, 2);
               });
 
               describe("security properties", async () => {
@@ -119,8 +119,7 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
                       .to.emit(vrfConsumer, "QuestionAnswered")
                       .withArgs(
                           secondRequestFulfillmentArgs.requestId,
-                          secondRequestFulfillmentArgs.value,
-                          2
+                          secondRequestFulfillmentArgs.value
                       );
 
                   const firstRequestFulfillmentArgs = { requestId: 1, value: 2 };
@@ -133,8 +132,7 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
                       .to.emit(vrfConsumer, "QuestionAnswered")
                       .withArgs(
                           firstRequestFulfillmentArgs.requestId,
-                          secondRequestFulfillmentArgs.value,
-                          2
+                          secondRequestFulfillmentArgs.value
                       );
               });
 
@@ -153,7 +151,7 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
                       vrfCoordinatorV2Mock.fulfillRandomWords(initialRequestId, vrfConsumer.address)
                   )
                       .to.emit(vrfConsumer, "QuestionAnswered")
-                      .withArgs(initialRequestId, expectedRandomValue, 2);
+                      .withArgs(initialRequestId, expectedRandomValue);
 
                   const secondRequestId = 2;
                   await expect(vrfConsumer.connect(account1).askQuestion())
@@ -178,8 +176,8 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
 
                       const result = await vrfConsumer.connect(account1).answer(account1.address);
 
-                      expect(result.answer).to.eq("It is decidedly so.");
-                      expect(result.id).to.eq(2);
+                      expect(result.value).to.eq("It is decidedly so.");
+                      expect(result.id).to.eq(1);
                   });
 
                   it("allows the sender to run the function for other addresses", async () => {
@@ -190,14 +188,14 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
                       const result = await vrfConsumer
                           .connect(account2)
                           .answer(accountWithResult.address);
-                      expect(result.answer).to.eq("It is decidedly so.");
-                      expect(result.id).to.eq(2);
+                      expect(result.value).to.eq("It is decidedly so.");
+                      expect(result.id).to.eq(1);
                   });
 
                   it("returns a special value if no address has been recorded for the input address", async () => {
                       const [account1] = await ethers.getSigners();
                       const result = await vrfConsumer.connect(account1).answer(account1.address);
-                      expect(result.answer).to.eq("NO_ANSWER_NONE");
+                      expect(result.value).to.eq("NO_ANSWER_NONE");
                       expect(result.id).to.eq(0);
                   });
 
@@ -206,7 +204,7 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
                       await vrfConsumer.connect(account1).askQuestion();
 
                       const result = await vrfConsumer.connect(account1).answer(account1.address);
-                      expect(result.answer).to.eq("NO_ANSWER_RUNNING");
+                      expect(result.value).to.eq("NO_ANSWER_RUNNING");
                       expect(result.id).to.eq(1);
                   });
               });

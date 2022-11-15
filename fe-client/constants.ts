@@ -51,12 +51,6 @@ const CONTRACT_ABI = [
         name: "asker",
         type: "uint256",
       },
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "count",
-        type: "uint256",
-      },
     ],
     name: "QuestionAnswered",
     type: "event",
@@ -94,7 +88,7 @@ const CONTRACT_ABI = [
         components: [
           {
             internalType: "string",
-            name: "answer",
+            name: "value",
             type: "string",
           },
           {

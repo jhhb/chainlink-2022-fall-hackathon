@@ -34,18 +34,18 @@ export async function getAnswer(
 
 export interface AnswerStruct {
   id: BigNumber;
-  answer: string;
+  value: string;
 }
 
 function assertIsStruct(value: unknown): asserts value is AnswerStruct {
-  const castValue = value as { answer: string; id: { _isBigNumber: true } };
+  const castValue = value as { value: string; id: { _isBigNumber: true } };
   const idIsBigNumber = castValue.id._isBigNumber;
   const error = new Error(`Expected value [${value}] to be an AnswerStruct`);
   if (!idIsBigNumber) {
     throw error;
   }
 
-  if (!castValue.answer.length) {
+  if (!castValue.value.length) {
     throw error;
   }
 }

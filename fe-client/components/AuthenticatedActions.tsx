@@ -78,7 +78,7 @@ export class AuthenticatedActions extends React.Component<
     const disabledStatus =
       awaitingClickResult ||
       awaitingNewAnswer ||
-      answer.answer === NO_ANSWER_RUNNING;
+      answer.value === NO_ANSWER_RUNNING;
     const inputLengthIsInvalid = !inputLengthIsValid(inputValue);
 
     const buttonProps = {
@@ -86,7 +86,7 @@ export class AuthenticatedActions extends React.Component<
       disabled:
         disabledStatus || inputState === "error" || inputLengthIsInvalid,
       isLoading: awaitingClickResult,
-      answer: answer.answer,
+      answer: answer.value,
     };
 
     const inputProps = {
@@ -95,11 +95,11 @@ export class AuthenticatedActions extends React.Component<
       state: disabledStatus ? "disabled" : inputState,
     };
 
-    const answerForBall = answerIsNonStubValue(answer.answer)
+    const answerForBall = answerIsNonStubValue(answer.value)
       ? answer
       : undefined;
     const ballProps = {
-      answer: answerForBall?.answer,
+      answer: answerForBall?.value,
       loading: disabledStatus,
     };
 
