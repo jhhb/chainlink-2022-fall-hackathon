@@ -28,7 +28,7 @@ contract RandomAnswer is VRFConsumerBaseV2 {
     uint8 constant private ASK_STATUS_RAN = 2;
 
     struct Answer {
-        string answer;
+        string value;
         uint id;
     }
 
@@ -145,12 +145,12 @@ contract RandomAnswer is VRFConsumerBaseV2 {
 
         if (status == ASK_STATUS_RAN) {
             string memory _answer = getAnswer(userAddressToResult[userAddress]);
-            return Answer(_answer, id);
+            return makeAnswer(id, _answer);
         } else {
             if (status == ASK_STATUS_RUNNING ) {
-                return Answer("NO_ANSWER_RUNNING", id);
+                return makeAnswer(id, "NO_ANSWER_RUNNING");
             } else {
-                return Answer("NO_ANSWER_NONE", id);
+                return makeAnswer(id, "NO_ANSWER_NONE");
             }
         }
     }
@@ -198,5 +198,10 @@ contract RandomAnswer is VRFConsumerBaseV2 {
             "RAN"
         ];
         return statuses[status];
+    }
+
+    function makeAnswer(uint256 id, string memory value) private pure returns (Answer memory) {
+        Answer memory a = Answer({id: id, value: value});
+        return a;
     }
 }

@@ -176,7 +176,7 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
 
                       const result = await vrfConsumer.connect(account1).answer(account1.address);
 
-                      expect(result.answer).to.eq("It is decidedly so.");
+                      expect(result.value).to.eq("It is decidedly so.");
                       expect(result.id).to.eq(1);
 
                       await vrfConsumer.connect(account1).askQuestion();
@@ -196,14 +196,14 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
                       const result = await vrfConsumer
                           .connect(account2)
                           .answer(accountWithResult.address);
-                      expect(result.answer).to.eq("It is decidedly so.");
+                      expect(result.value).to.eq("It is decidedly so.");
                       expect(result.id).to.eq(1);
                   });
 
                   it("returns a special value if no address has been recorded for the input address", async () => {
                       const [account1] = await ethers.getSigners();
                       const result = await vrfConsumer.connect(account1).answer(account1.address);
-                      expect(result.answer).to.eq("NO_ANSWER_NONE");
+                      expect(result.value).to.eq("NO_ANSWER_NONE");
                       expect(result.id).to.eq(0);
                   });
 
@@ -212,7 +212,7 @@ import { RandomAnswer, VRFCoordinatorV2Mock } from "../../typechain";
                       await vrfConsumer.connect(account1).askQuestion();
 
                       const result = await vrfConsumer.connect(account1).answer(account1.address);
-                      expect(result.answer).to.eq("NO_ANSWER_RUNNING");
+                      expect(result.value).to.eq("NO_ANSWER_RUNNING");
                       expect(result.id).to.eq(1);
                   });
               });
