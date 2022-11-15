@@ -26,14 +26,6 @@ const SUPPORTED_CHAINS: Array<SupportedChain> = [
   },
 ];
 
-function isSupportedChainId(chainId: number): boolean {
-  if (typeof chainId !== "number") {
-    throw new Error(`Chain ID must be a number`);
-  }
-  const chainIds: Array<number> = SUPPORTED_CHAINS.map((val) => val.chainId);
-  return chainIds.includes(chainId);
-}
-
 function findSupportedChain(chainId?: number): SupportedChain | undefined {
   if (chainId) {
     return SUPPORTED_CHAINS.find((chain) => chain.chainId === chainId);

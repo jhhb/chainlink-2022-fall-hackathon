@@ -4,7 +4,7 @@ import * as React from "react";
 
 interface QuestionInputProps {
   value: string;
-  handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleChange: (_event: React.ChangeEvent<HTMLInputElement>) => void;
   state: "disabled" | "initial" | "error";
 }
 

@@ -8,8 +8,6 @@ import { QuestionInput } from "./QuestionInput";
 import { answerIsNonStubValue, answersDiffer, askQuestion } from "../utils";
 import styles from "../styles/AuthenticatedActions.module.css";
 
-export type Statuses = "NONE" | "RUNNING" | "RAN";
-
 type InputState = "disabled" | "initial" | "error";
 
 interface AuthenticatedActionsProps {

@@ -7,7 +7,7 @@ import { Hero } from "@web3uikit/core";
 import { UnauthenticatedActions } from "../components/UnauthenticatedActions";
 import styles from "../styles/Home.module.css";
 import { useMoralis } from "react-moralis";
-import { SupportedChain, findSupportedChain } from "../utils/config";
+import { findSupportedChain } from "../utils/config";
 
 export default function Home() {
   const { isWeb3Enabled, account: address, web3 } = useMoralis();

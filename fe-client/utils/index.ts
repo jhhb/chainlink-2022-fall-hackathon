@@ -1,6 +1,6 @@
 import { NO_ANSWER_NONE, NO_ANSWER_RUNNING } from "../constants";
 import { SUPPORTED_CHAINS } from "./config";
-import { AnswerStruct, askQuestion, fetchStatus } from "./datasource";
+import { AnswerStruct, askQuestion } from "./datasource";
 import { COLORS } from "./colors";
 import { Poller } from "./poller";
 
@@ -16,7 +16,6 @@ function answersDiffer(
 }
 
 export {
-  fetchStatus,
   askQuestion,
   Poller,
   COLORS,
