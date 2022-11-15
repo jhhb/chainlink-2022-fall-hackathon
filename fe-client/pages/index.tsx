@@ -10,16 +10,16 @@ import { useMoralis } from "react-moralis";
 import { SupportedChain, findSupportedChain } from "../utils/config";
 
 export default function Home() {
-  const { isWeb3Enabled, account, web3 } = useMoralis();
+  const { isWeb3Enabled, account: address, web3 } = useMoralis();
   const chainId: number | undefined = web3?.network?.chainId;
   const resolvedChain = findSupportedChain(chainId);
 
   const mainContent =
-    isWeb3Enabled && account ? (
+    isWeb3Enabled && address ? (
       resolvedChain ? (
         <main className={styles.main}>
           <AuthenticatedActionsProvider
-            account={account}
+            address={address}
             currentChain={resolvedChain}
           />
         </main>

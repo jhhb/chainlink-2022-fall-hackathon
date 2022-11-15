@@ -13,7 +13,6 @@ export type Statuses = "NONE" | "RUNNING" | "RAN";
 type InputState = "disabled" | "initial" | "error";
 
 interface AuthenticatedActionsProps {
-  account: string;
   currentChain: SupportedChain;
   answer: AnswerStruct;
 }

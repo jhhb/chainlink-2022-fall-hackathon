@@ -6,7 +6,7 @@ import { AuthenticatedActions } from "./AuthenticatedActions";
 import { answersDiffer, Poller } from "../utils";
 
 interface Props {
-  account: string;
+  address: string;
   currentChain: SupportedChain;
 }
 
@@ -31,8 +31,8 @@ export class AuthenticatedActionsProvider extends React.Component<
   }
 
   public async componentDidMount() {
-    const { account, currentChain } = this.props;
-    const answerStruct = await getAnswer(account, currentChain);
+    const { address, currentChain } = this.props;
+    const answerStruct = await getAnswer(address, currentChain);
     this.setState({ answerStruct });
 
     this.poller = this.buildAndStartPoller();
@@ -63,9 +63,9 @@ export class AuthenticatedActionsProvider extends React.Component<
   };
 
   private buildAndStartPoller(): Poller | undefined {
-    const { account, currentChain } = this.props;
+    const { address, currentChain } = this.props;
     return Poller.buildAndStart(
-      account,
+      address,
       this.POLL_INTERVAL,
       this.pollerCallback,
       currentChain
@@ -76,7 +76,7 @@ export class AuthenticatedActionsProvider extends React.Component<
     if (this.state.answerStruct) {
       return (
         <AuthenticatedActions
-          account={this.props.account}
+          address={this.props.address}
           currentChain={this.props.currentChain}
           answer={this.state.answerStruct}
         />
