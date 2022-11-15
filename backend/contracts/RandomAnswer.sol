@@ -153,8 +153,8 @@ contract RandomAnswer is VRFConsumerBaseV2 {
         uint256 id = userAddressToRequestIdentifier[userAddress];
 
         if (status == ASK_STATUS_RAN) {
-            string memory answer = getAnswer(userAddressToResult[userAddress]);
-            return Answer(answer, id);
+            string memory _answer = getAnswer(userAddressToResult[userAddress]);
+            return Answer(_answer, id);
         } else {
             if (status == ASK_STATUS_RUNNING ) {
                 return Answer("NO_ANSWER_RUNNING", id);
