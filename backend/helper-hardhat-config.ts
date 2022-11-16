@@ -1,22 +1,22 @@
-import { BigNumber } from "ethers"
+import { BigNumber } from "ethers";
 
 type NetworkConfigItem = {
-    name: string
-    fundAmount: BigNumber
-    fee?: string
-    keyHash?: string
-    interval?: string
-    linkToken?: string
-    vrfCoordinator?: string
-    keepersUpdateInterval?: string
-    oracle?: string
-    jobId?: string
-    ethUsdPriceFeed?: string
-}
+    name: string;
+    fundAmount: BigNumber;
+    fee?: string;
+    keyHash?: string;
+    interval?: string;
+    linkToken?: string;
+    vrfCoordinator?: string;
+    keepersUpdateInterval?: string;
+    oracle?: string;
+    jobId?: string;
+    ethUsdPriceFeed?: string;
+};
 
 type NetworkConfigMap = {
-    [chainId: string]: NetworkConfigItem
-}
+    [chainId: string]: NetworkConfigItem;
+};
 
 export const networkConfig: NetworkConfigMap = {
     default: {
@@ -63,7 +63,7 @@ export const networkConfig: NetworkConfigMap = {
         fee: "100000000000000",
         fundAmount: BigNumber.from("100000000000000"),
     },
-}
+};
 
-export const developmentChains: string[] = ["hardhat", "localhost"]
-export const VERIFICATION_BLOCK_CONFIRMATIONS = 6
+export const developmentChains: string[] = ["hardhat", "localhost"];
+export const VERIFICATION_BLOCK_CONFIRMATIONS = 6;

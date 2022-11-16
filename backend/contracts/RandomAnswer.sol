@@ -24,9 +24,9 @@ import "hardhat/console.sol";
 
 contract RandomAnswer is VRFConsumerBaseV2 {
     VRFCoordinatorV2Interface private coordinator;
-    
-    uint8 constant private ASK_STATUS_RUNNING = 1;
-    uint8 constant private ASK_STATUS_RAN = 2;
+
+    uint8 private constant ASK_STATUS_RUNNING = 1;
+    uint8 private constant ASK_STATUS_RAN = 2;
 
     uint64 private subscriptionId;
     bytes32 private keyHash;
@@ -69,7 +69,11 @@ contract RandomAnswer is VRFConsumerBaseV2 {
      * @param vrfCoordinator - coordinator, check https://docs.chain.link/docs/vrf-contracts/#configurations
      * @param _keyHash - the gas lane to use, which specifies the maximum gas price to bump to
      */
-    constructor(uint64 _subscriptionId, address vrfCoordinator, bytes32 _keyHash) VRFConsumerBaseV2(vrfCoordinator) {
+    constructor(
+        uint64 _subscriptionId,
+        address vrfCoordinator,
+        bytes32 _keyHash
+    ) VRFConsumerBaseV2(vrfCoordinator) {
         coordinator = VRFCoordinatorV2Interface(vrfCoordinator);
         subscriptionId = _subscriptionId;
         keyHash = _keyHash;
@@ -84,8 +88,11 @@ contract RandomAnswer is VRFConsumerBaseV2 {
     function askQuestion() public returns (uint256 requestId) {
         address asker = msg.sender;
         // If question is currently in progress for user, do not allow.
-        require(userAddressToStatus[asker] != ASK_STATUS_RUNNING, "You must wait for your current question to be answered.");
-        
+        require(
+            userAddressToStatus[asker] != ASK_STATUS_RUNNING,
+            "You must wait for your current question to be answered."
+        );
+
         // Will revert if subscription is not set and funded.
         requestId = coordinator.requestRandomWords(
             keyHash,
@@ -122,7 +129,7 @@ contract RandomAnswer is VRFConsumerBaseV2 {
 
         userAddressToResult[userAddress] = d20Value;
         userAddressToStatus[userAddress] = ASK_STATUS_RAN;
-        
+
         emit QuestionAnswered(requestId, d20Value);
     }
 
@@ -133,8 +140,14 @@ contract RandomAnswer is VRFConsumerBaseV2 {
      */
     function answer(address userAddress) public view returns (string memory) {
         // TODO: JB - See if there is a way to simplify the state management.
-        require(userAddressToStatus[userAddress] != ASK_STATUS_RUNNING, "The requested address is currently asking. Please wait.");
-        require(userAddressToResult[userAddress] != 0, "The requested address must first call #askQuestion itself before an answer is computed.");
+        require(
+            userAddressToStatus[userAddress] != ASK_STATUS_RUNNING,
+            "The requested address is currently asking. Please wait."
+        );
+        require(
+            userAddressToResult[userAddress] != 0,
+            "The requested address must first call #askQuestion itself before an answer is computed."
+        );
 
         return getAnswer(userAddressToResult[userAddress]);
     }
@@ -176,11 +189,7 @@ contract RandomAnswer is VRFConsumerBaseV2 {
     }
 
     function _getUserStatus(uint256 status) private pure returns (string memory) {
-        string[3] memory statuses = [
-            "NONE",
-            "RUNNING",
-            "RAN"
-        ];
+        string[3] memory statuses = ["NONE", "RUNNING", "RAN"];
         return statuses[status];
     }
 }
