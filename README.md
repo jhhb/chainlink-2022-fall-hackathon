@@ -20,6 +20,7 @@
 A verifiably random Magic 8 Ball frontend web application, using a Goerli testnet smart contract as the server, powered by [Chainlink VRF V2](https://docs.chain.link/vrf/v2/introduction) and the VRF V2 subscription funding model.
 
 ## Using the live application
+
 - Visit the website [vrf8ball.link](https://www.vrf8ball.link) and connect to the Goerli testnet!
   - Only Goerli and Hardhat (locally) are supported.
 
@@ -50,6 +51,7 @@ yarn hardhat node
 
 3. Navigate to the frontend and replace the constant `LOCALHOST_CONTRACT_ADDRESS` in the file `fe-client/utils/config.ts` with your copied contract address.
 4. Run the following:
+
 ```
 yarn && yarn dev
 ```
@@ -63,7 +65,9 @@ yarn && yarn dev
 ![Initial State example](https://user-images.githubusercontent.com/12632889/202300723-5c644e11-29ef-4eef-9b15-30f6f4fbc4a3.png "Initial state example")
 
 ## Features and Functionality
+
 ### Frontend
+
 - A user can connect their wallet
 - Once connected, a user will either see the application (if connected to a supported network), or a message telling them the supported network to connect to.
 - The user can enter a question, submit it, and await an answer from the Magic 8 Ball.
@@ -76,27 +80,30 @@ yarn && yarn dev
   - But, in the current implementation, this requires that the transaction has already been committed in order for it to work smoothly.
 
 ### Backend
+
 - A user can have a single running VRF request (i.e. in-flight answer) at a time.
 - A user can only ask a question if they are not already awaiting a VRF response.
 - Multiple users can have in-flight responses simultaneously.
 - A user can request another answer from the Magic 8 Ball after they receive an answer.
 
 ## License
+
 - The frontend project specifies the GNU GPL V3 license (see: [`fe-client/LICENSE`](https://github.com/jhhb/vrf8ball.link/blob/1861ab6364331f7498647de11e20ec129b6a84ef/fe-client/LICENSE)
   - A non-trivial portion of the frontend application also re-uses (with modification, and attribution) [this Codepen](https://codepen.io/CarliBotes/pen/vMYLdq?html-preprocessor=slim) by Carli Botes.
     - The derivative code has been commented inline in accordance with the relevant Codepen license.
 - The backend project is compliant with the MIT license as it's a derivative work (see: [`backend/LICENSE`](https://github.com/jhhb/vrf8ball.link/blob/1861ab6364331f7498647de11e20ec129b6a84ef/backend/LICENSE)))
 
-
 ## Miscellaneous
 
 ### This project would not have been possible without the following resources
+
 - [Intro to Hardhat YouTube video by Chainlink](https://www.youtube.com/watch?v=gThHQ4Jdff4)
 - [Intro to Front-end Develipment in Web3 Youtube Video by Chainlink](https://www.youtube.com/watch?v=_aQxlQTzfpk)
 - [This excellent Codepen produced by Carli Botes](https://codepen.io/CarliBotes/pen/vMYLdq?html-preprocessor=slim)
 - And countless docs + Stack Overflow searches.
 
 ### Technologies, Stack
+
 - Backend
   - [Chainlink VRF V2](https://docs.chain.link/vrf/v2/introduction) (subscription funding model), powered by Chainlink
   - Ethereum network (i.e. Goerli testnet)
