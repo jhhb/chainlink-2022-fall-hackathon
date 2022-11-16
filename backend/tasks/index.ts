@@ -1,5 +1,3 @@
-import "./accounts"
-import "./balance"
-import "./block-number"
-import "./withdraw-link"
-import "./random-number-consumer"
+import "./accounts";
+import "./balance";
+import "./block-number";

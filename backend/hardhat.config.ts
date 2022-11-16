@@ -1,31 +1,31 @@
-import * as dotenv from "dotenv"
+import * as dotenv from "dotenv";
 
-import type { HardhatUserConfig } from "hardhat/config"
-import "@nomicfoundation/hardhat-toolbox"
-import "@nomicfoundation/hardhat-chai-matchers"
-import "hardhat-deploy"
-import "hardhat-contract-sizer"
-import "@appliedblockchain/chainlink-plugins-fund-link"
-import "./tasks"
+import type { HardhatUserConfig } from "hardhat/config";
+import "@nomicfoundation/hardhat-toolbox";
+import "@nomicfoundation/hardhat-chai-matchers";
+import "hardhat-deploy";
+import "hardhat-contract-sizer";
+import "@appliedblockchain/chainlink-plugins-fund-link";
+import "./tasks";
 
-dotenv.config()
+dotenv.config();
 
 const MAINNET_RPC_URL =
     process.env.MAINNET_RPC_URL ||
     process.env.ALCHEMY_MAINNET_RPC_URL ||
-    "https://eth-mainnet.alchemyapi.io/v2/your-api-key"
+    "https://eth-mainnet.alchemyapi.io/v2/your-api-key";
 const POLYGON_MAINNET_RPC_URL =
-    process.env.POLYGON_MAINNET_RPC_URL || "https://polygon-mainnet.alchemyapi.io/v2/your-api-key"
+    process.env.POLYGON_MAINNET_RPC_URL || "https://polygon-mainnet.alchemyapi.io/v2/your-api-key";
 const GOERLI_RPC_URL =
-    process.env.GOERLI_RPC_URL || "https://eth-goerli.alchemyapi.io/v2/your-api-key"
-const PRIVATE_KEY = process.env.PRIVATE_KEY
+    process.env.GOERLI_RPC_URL || "https://eth-goerli.alchemyapi.io/v2/your-api-key";
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
 // optional
-const MNEMONIC = process.env.MNEMONIC || "Your mnemonic"
-const FORKING_BLOCK_NUMBER = process.env.FORKING_BLOCK_NUMBER
+const MNEMONIC = process.env.MNEMONIC || "Your mnemonic";
+const FORKING_BLOCK_NUMBER = process.env.FORKING_BLOCK_NUMBER;
 
 // Your API key for Etherscan, obtain one at https://etherscan.io/
-const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "Your etherscan API key"
-const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY || "Your polygonscan API key"
+const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "Your etherscan API key";
+const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY || "Your polygonscan API key";
 
 const config: HardhatUserConfig = {
     defaultNetwork: "hardhat",
@@ -115,6 +115,6 @@ const config: HardhatUserConfig = {
         outDir: "typechain",
         target: "ethers-v5",
     },
-}
+};
 
-export default config
+export default config;
