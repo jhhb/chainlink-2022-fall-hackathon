@@ -5,9 +5,15 @@
 - [Description](#description)
 - [Using the live application](#using-the-live-application)
 - [Local Development](#local-development)
-    - [In the backend](#in-the-backend)
-    - [Then, in the frontend...](#then-in-the-frontend)
+  - [In the backend](#in-the-backend)
+  - [Then, in the frontend...](#then-in-the-frontend)
+- [Features and Functionality](#features-and-functionality)
+  - [Frontend](#frontend)
+  - [Backend](#backend)
 - [License](#license)
+- [Miscellaneous](#miscellaneous)
+  - [This project would not have been possible without the following resources](#this-project-would-not-have-been-possible-without-the-following-resources)
+  - [Technologies, Stack](#technologies-stack)
 
 ## Description
 
@@ -84,6 +90,12 @@ yarn && yarn dev
 
 ## Miscellaneous
 
+### This project would not have been possible without the following resources
+- [Intro to Hardhat YouTube video by Chainlink](https://www.youtube.com/watch?v=gThHQ4Jdff4)
+- [Intro to Front-end Develipment in Web3 Youtube Video by Chainlink](https://www.youtube.com/watch?v=_aQxlQTzfpk)
+- [This excellent Codepen produced by Carli Botes](https://codepen.io/CarliBotes/pen/vMYLdq?html-preprocessor=slim)
+- And countless docs + Stack Overflow searches.
+
 ### Technologies, Stack
 - Backend
   - [Chainlink VRF V2](https://docs.chain.link/vrf/v2/introduction) (subscription funding model), powered by Chainlink
@@ -98,10 +110,3 @@ yarn && yarn dev
 - Hosting
   - Netlify
 - Resources
-
-### This project would not have been possible without the following resources
-- [Intro to Hardhat YouTube video by Chainlink](https://www.youtube.com/watch?v=gThHQ4Jdff4)
-- [Intro to Front-end Develipment in Web3 Youtube Video by Chainlink](https://www.youtube.com/watch?v=_aQxlQTzfpk)
-- [This excellent Codepen produced by Carli Botes](https://codepen.io/CarliBotes/pen/vMYLdq?html-preprocessor=slim)
-- And countless docs + Stack Overflow searches.
-
