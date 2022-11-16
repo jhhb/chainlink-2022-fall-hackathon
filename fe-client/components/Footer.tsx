@@ -11,7 +11,7 @@ export function Footer(_props: Props) {
           <span>
             See the
             <LinkInNewTab
-              href="https://github.com/jhhb/chainlink-2022-fall-hackathon"
+              href="https://github.com/jhhb/vrf8ball.link"
               text=" code on Github"
             />
           </span>
