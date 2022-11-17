@@ -2,7 +2,7 @@
 
 ## Table of Contents
 
-- [Description](#description)
+- [Description and demo video](#description-and-demo-video)
 - [Using the live application](#using-the-live-application)
 - [Local Development](#local-development)
   - [In the backend](#in-the-backend)
@@ -15,9 +15,11 @@
   - [This project would not have been possible without the following resources](#this-project-would-not-have-been-possible-without-the-following-resources)
   - [Technologies, Stack](#technologies-stack)
 
-## Description
+## Description and demo video
 
 A verifiably random Magic 8 Ball frontend web application, using a Goerli testnet smart contract as the server, powered by [Chainlink VRF V2](https://docs.chain.link/vrf/v2/introduction) and the VRF V2 subscription funding model.
+
+[Here is the demo video](https://www.youtube.com/watch?v=Ncgz0rHIhnM).
 
 ## Using the live application
 
