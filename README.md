@@ -23,6 +23,7 @@ A verifiably random Magic 8 Ball frontend web application, using a Goerli testne
 
 - Visit the website [vrf8ball.link](https://www.vrf8ball.link) and connect to the Goerli testnet!
   - Only Goerli and Hardhat (locally) are supported.
+  - The final deployed contract can be seen [here on Etherscan](https://goerli.etherscan.io/address/0x4CaBae97ed6501DbAf6Bd7265D77c7EB86c332BB) 
 
 ## Local Development
 
@@ -75,7 +76,7 @@ yarn && yarn dev
   - Canceling the request will revert the UI to its original state.
 - The UI will go into a loading state, awaiting the response.
 - Once the response is available, the UI will render the answer.
-- Returning to the page later on will show the last answer in the Magic 8 Ball.
+- Returning to the page later on will show the last answer just above the question input.
 - The frontend restores the UI state if the user refreshes or leaves the page while awaiting an answer.
   - But, in the current implementation, this requires that the transaction has already been committed in order for it to work smoothly.
 
@@ -114,6 +115,6 @@ yarn && yarn dev
   - React.js
   - Typescript
   - [Web3UIKit](https://github.com/web3ui/web3uikit) and [react-moralis](https://github.com/MoralisWeb3/react-moralis), powered by Moralis
-- Hosting
-  - Netlify
-- Resources
+- Infra
+  - Netlify (hosting)
+  - Alchemy (RPC provider)
