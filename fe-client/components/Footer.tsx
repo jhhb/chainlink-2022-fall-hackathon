@@ -17,7 +17,6 @@ export function Footer(_props: Props) {
           </span>
         </Item>
         <Item className={styles["link-to"]}>
-          <strong>Contact + Email</strong>
           <span>
             Made by
             <LinkInNewTab
