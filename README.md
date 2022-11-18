@@ -61,7 +61,7 @@ yarn && yarn dev
 
 5. In your browser, visit http://localhost:3000/
 
-6. Setup (or connect to) the Hardhat network with your browser wallet of choice.
+6. Setup (or connect to) the Hardhat network with your browser wallet of choice. Instructions for how to do that can be found [here](https://support.chainstack.com/hc/en-us/articles/4408642503449-Using-MetaMask-with-a-Hardhat-node)
 
 7. Once connected to the Hardhat network, you should see the following as your initial state.
 
