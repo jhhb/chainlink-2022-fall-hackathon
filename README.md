@@ -48,7 +48,7 @@ yarn hardhat test
 yarn hardhat node
 ```
 
-2. Copy and save the deployed contract address.
+2. Copy and save the output deployed contract address from running `yarn hardhat node` (it will display above the output for all the generated accounts). 
 
 ### Then, in the frontend...
 
